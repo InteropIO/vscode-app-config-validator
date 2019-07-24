@@ -1,0 +1,89 @@
+{
+    "name": "glue42-configuration-validator",
+    "displayName": "Glue42 configuration validator",
+    "description": "Tool which lints the application configuration files for glue",
+    "version": "0.0.4",
+    "engines": {
+        "vscode": "^1.29.0"
+    },
+    "publisher": "Tick42",
+    "author": "Svetozar Mateev",
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "onLanguage:json",
+        "onLanguage:jsonc"
+    ],
+    "main": "./out/extension",
+    "contributes": {
+        "commands": [
+            {
+                "command": "glue42-configuration-validator.sayHello",
+                "title": "Hello World"
+            },
+            {
+                "command": "glue42-configuration-validator.GenWinConfig",
+                "title": "Generate Config: Window"
+            },
+            {
+                "command": "glue42-configuration-validator.GenServiceWinConfig",
+                "title": "Generate Config: Service Window"
+            },
+            {
+                "command": "glue42-configuration-validator.GenActConfig",
+                "title": "Generate Config: Activity"
+            },
+            {
+                "command": "glue42-configuration-validator.GenExeConfig",
+                "title": "Generate Config: Exe"
+            },
+            {
+                "command": "glue42-configuration-validator.GenNodeConfig",
+                "title": "Generate Config: Node"
+            },
+            {
+                "command": "glue42-configuration-validator.deploy",
+                "title": "Deploy to Glue"
+            }
+        ],
+        "configuration": {
+            "type": "object",
+            "title": "Glue configuration settings",
+            "properties": {
+                "glue42-configuration-validator.overwriteContents": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Overwrite existing content when generating a configuration"
+                },
+                "glue42-configuration-validator.glueDeploymentPath": {
+                    "type": "string",
+                    "default": "%LOCALAPPDATA%/Tick42/GlueDesktop/config/apps",
+                    "description": "Path to to the folder that Glue Desktop uses for application configurations"
+                }
+            }
+        }
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "test": "npm run compile && node ./node_modules/vscode/bin/test"
+    },
+    "devDependencies": {
+        "@types/json-stable-stringify": "^1.0.32",
+        "@types/json5": "0.0.30",
+        "@types/lodash": "^4.14.120",
+        "@types/mocha": "^2.2.42",
+        "@types/node": "^8.10.25",
+        "tslint": "^5.8.0",
+        "typescript": "^3.1.4"
+    },
+    "dependencies": {
+        "json5": "^2.1.0",
+        "ajv": "^6.4.0",
+        "fs-assistant": "^0.1.2",
+        "vscode": "^1.1.25"
+    }
+}
