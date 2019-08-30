@@ -60,6 +60,11 @@
                     "type": "string",
                     "default": "%LOCALAPPDATA%/Tick42/GlueDesktop/config/apps",
                     "description": "Path to to the folder that Glue Desktop uses for application configurations"
+                },
+                "glue42-configuration-validator.underlineErrors":{
+                    "type":"boolean",
+                    "default":true,
+                    "description": "Choose whether to underline any configuration errors in the editor"
                 }
             }
         }
@@ -78,12 +83,15 @@
         "@types/mocha": "^2.2.42",
         "@types/node": "^8.10.25",
         "tslint": "^5.8.0",
-        "typescript": "^3.1.4"
+        "typescript": "^3.1.4",
+        "vscode": "^1.1.25"
+
     },
     "dependencies": {
-        "json5": "^2.1.0",
+        "@types/json-to-ast": "^2.1.0",
         "ajv": "^6.4.0",
         "fs-assistant": "^0.1.2",
-        "vscode": "^1.1.25"
+        "json-to-ast": "^2.1.0",
+        "json5": "^2.1.0"
     }
 }

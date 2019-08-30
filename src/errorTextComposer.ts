@@ -9,11 +9,14 @@
  */
 
 import ajv = require("ajv");
+import { ValidationError } from "./types";
 
 class ErrorTextComposer {
-    public compose(errorObject: ajv.ErrorObject): { message: string } {
+    public compose(errorObject: ajv.ErrorObject): ValidationError {
         const defaultErrorObject = {
-            message: errorObject.message ? errorObject.message : "Unable to determine error"
+            message: errorObject.message ? errorObject.message : "Unable to determine error",
+            dataPath: errorObject.dataPath,
+            underLineMessage: "No information"
         };
 
         switch (errorObject.keyword) {
@@ -30,43 +33,57 @@ class ErrorTextComposer {
         }
     }
 
-    private handleAdditionalProperties(errorObject: ajv.ErrorObject): { message: string } {
+    private handleAdditionalProperties(errorObject: ajv.ErrorObject): ValidationError {
         const result = {
             message: "",
+            dataPath: errorObject.dataPath,
+            underLineMessage: "No information"
         };
         const additionalProperty: string = (errorObject.params as any).additionalProperty;
         result.message = `Should not have the additional property "${additionalProperty}"`;
+        result.underLineMessage = result.message;
+
         return result;
     }
 
-    private handleEnum(errorObject: ajv.ErrorObject): { message: string } {
+    private handleEnum(errorObject: ajv.ErrorObject): ValidationError {
         const result = {
             message: "",
+            dataPath: errorObject.dataPath,
+            underLineMessage: "No information"
         };
         const allowedValues: any[] = (errorObject.params as any).allowedValues;
         result.message = `${errorObject.dataPath} should be one of: ${allowedValues.join(", ")}`;
+        result.underLineMessage = `Should be one of: ${allowedValues.join(", ")}`;
+
         return result;
     }
 
-    private handleRequired(errorObject: ajv.ErrorObject): { message: string } {
+    private handleRequired(errorObject: ajv.ErrorObject): ValidationError {
 
         const result = {
             message: "",
+            dataPath: errorObject.dataPath,
+            underLineMessage: "No information"
         };
 
         const missingProperty: string = (errorObject.params as any).missingProperty;
         result.message = `${missingProperty} is missing`;
+        result.underLineMessage = result.message;
 
         return result;
     }
 
-    private handleType(errorObject: ajv.ErrorObject): { message: string } {
+    private handleType(errorObject: ajv.ErrorObject): ValidationError {
         const result = {
             message: "",
+            dataPath: errorObject.dataPath,
+            underLineMessage: "No information"
         };
 
         const correctType: string = (errorObject.params as any).type;
         result.message = `${errorObject.dataPath} should be ${correctType}`;
+        result.underLineMessage = `Should be ${correctType}`;
 
         return result;
     }

@@ -14,13 +14,14 @@ import glueSystemSchema from "./assets/glueSystemSchema";
 import * as json5 from "json5";
 import * as ajv from "ajv";
 import errorTextComposer from "./errorTextComposer";
+import { ValidationSummary, ValidationError } from './types';
 
 class ConfigurationValidator {
     private readonly ajvVal: ajv.Ajv;
     private readonly AppSchemaEmptyKey = "application-empty.json";
 
     constructor() {
-        this.ajvVal = new ajv({ useDefaults: true });
+        this.ajvVal = new ajv({ useDefaults: true, meta: true, jsonPointers: true });
         this.ajvVal.addMetaSchema(require('ajv/lib/refs/json-schema-draft-06.json'));
         this.ajvVal.addSchema(JSON.parse(JSON.stringify(glueAppSchema)), "appSchema");
         this.ajvVal.addSchema(JSON.parse(JSON.stringify(glueSystemSchema)), "systemSchema");
@@ -40,13 +41,13 @@ class ConfigurationValidator {
 
     }
 
-    public onChange(document: vscode.TextDocument) {
+    public onChange(document: vscode.TextDocument): ValidationSummary {
         const validationResult = this.validateTextInEditor(document.getText());
 
         return validationResult;
     }
 
-    private validateTextInEditor(text: string): { isValid: boolean, error: { message: string } } {
+    private validateTextInEditor(text: string): ValidationSummary {
         try {
             let parsedText = json5.parse(text);
             if (!Array.isArray(parsedText)) {
@@ -58,14 +59,16 @@ class ConfigurationValidator {
             const errors = this.ajvVal.errors ? this.ajvVal.errors.map((a) => a) : [];
 
             if (!isValid) {
+                const error: ValidationError = errors && errors[0] ? errorTextComposer.compose(errors[0]) : { message: "Unknown error" };
+                error.dataPath = undefined;
                 return {
                     isValid,
-                    error: errors && errors[0] ? errorTextComposer.compose(errors[0]) : { message: "Unknown error" }
+                    error
                 };
             }
 
             // Step2: check if the appType-specific props are OK
-            const validationSummary = (parsedText as any[]).map((appDef: { type: string }) => {
+            const validationSummary: Array<ValidationSummary> = (parsedText as any[]).map((appDef: { type: string }) => {
 
                 const appType = appDef.type;
 

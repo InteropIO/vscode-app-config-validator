@@ -34,17 +34,23 @@ import {
     SHOW_VALID_OPTIONS_COMMAND,
     DEPLOY_LABEL,
     STATUS_BAR_ITEM_INVALID_TEXT,
-    STATUS_BAR_ITEM_VALID_TEXT
+    STATUS_BAR_ITEM_VALID_TEXT,
+    EXTENSION_NAME
 } from './constants';
 import configGenerator from './configGenerator';
 import commandsManager from './commandsManager';
 import { basename } from 'path';
+import errorPointer from './errorPointer';
 
-let currentError: { message: string };
+let currentError: { message: string, underLineMessage?: string };
 let statusBarItem: vscode.StatusBarItem;
+let extensionSettings: vscode.WorkspaceConfiguration;
+let diagnosticCollection: vscode.DiagnosticCollection;
 
 export function activate(context: vscode.ExtensionContext) {
     statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right);
+    extensionSettings = vscode.workspace.getConfiguration(EXTENSION_NAME);
+    diagnosticCollection = vscode.languages.createDiagnosticCollection('Glue42');
 
     commandsManager.registerCommand(SHOW_VALID_OPTIONS_COMMAND, () => {
         vscode.window.showInformationMessage(`You can deploy your configuration to "${configGenerator.location}"`,
@@ -128,14 +134,22 @@ function triggerValidation(document?: vscode.TextDocument) {
     const containsJsonAndGit = document && fileExtensions.indexOf("git") !== -1 && fileExtensions.indexOf("json") !== -1;
     if (document && (document.languageId === "json" || document.languageId === "jsonc")) {
         const validationResult = validator.onChange(document);
+        const documentText = document.getText();
         statusBarItem.tooltip = "Click here for available actions";
+
         if (!validationResult.isValid) {
             currentError = validationResult.error || { message: "Unable to determine the error" };
             statusBarItem.text = STATUS_BAR_ITEM_INVALID_TEXT;
             statusBarItem.command = SHOW_ERRORS_COMMAND;
+            if (validationResult.error.dataPath) {
+                const range = errorPointer.point(validationResult.error.dataPath, documentText);
+                updateDiagnostics(document, range, currentError.underLineMessage || "Unable to determine the error");
+            }
         } else {
             statusBarItem.text = STATUS_BAR_ITEM_VALID_TEXT;
             statusBarItem.command = SHOW_VALID_OPTIONS_COMMAND;
+
+            updateDiagnostics(document);
         }
 
         statusBarItem.show();
@@ -146,7 +160,29 @@ function triggerValidation(document?: vscode.TextDocument) {
 
 }
 
+function updateDiagnostics(document: vscode.TextDocument, underlineRange?: vscode.Range, errorMessage?: string): void {
+
+    const underlineErrors = extensionSettings.get<boolean>("underlineErrors");
+
+    if (document && errorMessage && underlineRange && underlineErrors) {
+        diagnosticCollection.set(document.uri, [{
+            code: '',
+            message: errorMessage,
+            range: underlineRange,
+            severity: vscode.DiagnosticSeverity.Error,
+            source: 'Glue42 configuration validator',
+            relatedInformation: []
+        }]);
+    } else if (document && (!errorMessage || !underlineRange || !underlineErrors)) {
+        diagnosticCollection.delete(document.uri);
+    } else {
+        diagnosticCollection.clear();
+    }
+}
+
+
 // this method is called when your extension is deactivated
 export function deactivate() {
     statusBarItem.dispose();
+    diagnosticCollection.dispose();
 }
