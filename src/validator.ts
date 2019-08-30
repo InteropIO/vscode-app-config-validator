@@ -10,17 +10,34 @@
 
 import * as vscode from 'vscode';
 import glueAppSchema from './assets/glueAppSchema';
+import glueSystemSchema from "./assets/glueSystemSchema";
 import * as json5 from "json5";
 import * as ajv from "ajv";
 import errorTextComposer from "./errorTextComposer";
 
 class ConfigurationValidator {
     private readonly ajvVal: ajv.Ajv;
+    private readonly AppSchemaEmptyKey = "application-empty.json";
 
     constructor() {
         this.ajvVal = new ajv({ useDefaults: true });
         this.ajvVal.addMetaSchema(require('ajv/lib/refs/json-schema-draft-06.json'));
         this.ajvVal.addSchema(JSON.parse(JSON.stringify(glueAppSchema)), "appSchema");
+        this.ajvVal.addSchema(JSON.parse(JSON.stringify(glueSystemSchema)), "systemSchema");
+
+        const appSchemaClone: any = JSON.parse(JSON.stringify(glueAppSchema));
+        appSchemaClone.definitions.application.properties.details = { type: "object" };
+        appSchemaClone.$id = `http://glue42.com/gd/${this.AppSchemaEmptyKey}`;
+        this.ajvVal.addSchema(appSchemaClone, this.AppSchemaEmptyKey);
+
+        const types: string[] = appSchemaClone.definitions.application.properties.type.enum; // "window","activity","exe","node","canvas", etc.
+        types.forEach((appType) => {
+            const typedSchema = JSON.parse(JSON.stringify(glueAppSchema)) as { [key: string]: any };
+            typedSchema.definitions.application.properties.details = typedSchema.definitions[appType];
+            typedSchema.$id = `http://glue42.com/gd/application-${appType}.json`;
+            this.ajvVal.addSchema(typedSchema, `application-${appType}.json`);
+        });
+
     }
 
     public onChange(document: vscode.TextDocument) {
@@ -35,12 +52,34 @@ class ConfigurationValidator {
             if (!Array.isArray(parsedText)) {
                 parsedText = [parsedText];
             }
-            const ajvResult = this.ajvVal.validate("appSchema", parsedText);
 
-            return {
-                isValid: ajvResult as boolean,
-                error: this.ajvVal.errors ? errorTextComposer.compose(this.ajvVal.errors[0]) : { message: "Unknown error" }
-            };
+            // check if the topLevel props are OK
+            const isValid: boolean = this.ajvVal.validate(this.AppSchemaEmptyKey, parsedText) as boolean;
+            const errors = this.ajvVal.errors ? this.ajvVal.errors.map((a) => a) : [];
+
+            if (!isValid) {
+                return {
+                    isValid,
+                    error: errors && errors[0] ? errorTextComposer.compose(errors[0]) : { message: "Unknown error" }
+                };
+            }
+
+            // Step2: check if the appType-specific props are OK
+            const validationSummary = (parsedText as any[]).map((appDef: { type: string }) => {
+
+                const appType = appDef.type;
+
+                const appIsValid = this.ajvVal.validate(`application-${appType}.json`, [appDef]) as boolean;
+                const appErrors = this.ajvVal.errors ? this.ajvVal.errors.map((a) => a) : [];
+
+                return {
+                    isValid: appIsValid,
+                    error: appErrors[0] ? errorTextComposer.compose(appErrors[0]) : { message: "Unknown error" }
+                };
+            });
+
+            return validationSummary[0] || { isValid: true, error: { message: "" } };
+
         } catch (error) {
             return {
                 isValid: false,

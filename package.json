@@ -2,7 +2,7 @@
     "name": "glue42-configuration-validator",
     "displayName": "Glue42 configuration validator",
     "description": "Tool which lints the application configuration files for glue",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "engines": {
         "vscode": "^1.29.0"
     },

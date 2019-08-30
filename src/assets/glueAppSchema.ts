@@ -12,7 +12,7 @@ const schema ={
     "$id": "http://glue42.com/gd/application.json",
     "$schema": "http://json-schema.org/draft-06/schema#",
     "title": "ApplicationConfigSet",
-    "description": "Schema describing set of configurations for applications running in GD",
+    "description": "Schema describing the set of configurations for applications running in Glue42 Desktop.",
     "type": "array",
     "items": {
         "$ref": "#/definitions/application"
@@ -21,7 +21,7 @@ const schema ={
         "application": {
             "title": "ApplicationConfig",
             "type": "object",
-            "description": "Schema describing configuration for application running in GD",
+            "description": "Schema describing the configuration for an application running in Glue42 Desktop.",
             "required": [
                 "type",
                 "name",
@@ -30,7 +30,7 @@ const schema ={
             "additionalProperties": false,
             "properties": {
                 "type": {
-                    "description": "Type of the application",
+                    "description": "Type of the application.",
                     "enum": [
                         "window",
                         "activity",
@@ -40,7 +40,7 @@ const schema ={
                     ]
                 },
                 "details": {
-                    "description": "Detailed configuration based on application type",
+                    "description": "Detailed configuration based on the application type.",
                     "oneOf": [
                         {
                             "$ref": "#/definitions/window"
@@ -60,23 +60,23 @@ const schema ={
                     ]
                 },
                 "name": {
-                    "description": "Name of the application - should be unique",
+                    "description": "Name of the application. Should be unique.",
                     "type": "string"
                 },
                 "version": {
-                    "description": "The version of the application",
+                    "description": "Version of the application.",
                     "type": "string"
                 },
                 "title": {
-                    "description": "Title that will be used when visualizing the application",
+                    "description": "Title used when visualizing the application.",
                     "type": "string"
                 },
                 "caption": {
-                    "description": "User friendly (long) description that can be used by the ACS clients to show more detailed application’s information",
+                    "description": "User friendly (longer) description that can be used by the Glue42 Desktop clients to show more detailed application information.",
                     "type": "string"
                 },
                 "configMode": {
-                    "description": "Specifies for which ACS configuration mode these applications will be available",
+                    "description": "Specifies in which Glue42 Desktop configuration mode these applications will be available.",
                     "enum": [
                         "All",
                         "File",
@@ -85,71 +85,81 @@ const schema ={
                     "default": "All"
                 },
                 "tooltip": {
-                    "description": "Tooltip (extended description) that will be used when visualizing the application",
+                    "description": "Tooltip (extended description) that will be used when visualizing the application.",
                     "type": "string"
                 },
                 "autoStart": {
-                    "description": "If true the application will be auto started",
+                    "description": "If `true`, the application will auto-start.",
                     "type": "boolean",
                     "default": false
                 },
+                "runPriority": {
+                    "description": "If the `runPriority` property is missing or is zero, the application is considered to be low priority, i.e. all current applications will be low priority until someone changes/sets their `runPriority` configurations.",
+                    "type": "number",
+                    "default": 0
+                },
                 "requiresSSO": {
-                    "description": "This option is valid for system applications, auto-start applications and if it is true, they will be auto-started after a successful SSO login. Note that user applications are always initialized (and this way auto-started) after SSO login, so this option is useless for them.",
+                    "description": "This option is valid for system and auto-start applications and if it is `true`, they will auto-start after a successful SSO login. Note that user applications are always initialized (and this way auto-started) after SSO login., so this option is useless for them",
                     "type": "boolean",
                     "default": false
                 },
                 "shell": {
-                    "description": "This option is valid for system application and if true, the application will be started after ACS initialization. Usually this is the container based web UI application which acts as an ACS client.",
+                    "description": "This option is valid for system applications and if `true`, the application will start after Glue42 Desktop initialization. Usually, this is a container based web UI application which acts as a Glue42 Desktop client.",
+                    "type": "boolean",
+                    "default": false
+                },
+                "ignoreSavedLayout": {
+                    "description": "If `true`, the application default layout will not be auto-saved when it is closed and on the next start, if the layout exists, it will be ignored.",
                     "type": "boolean",
                     "default": false
                 },
                 "ignoreSaveOnClose": {
-                    "description": "If true, application’s default layout will not be auto-saved when application is closed. Otherwise, on the next start application will be displayed on its last location with last shown window(s).",
+                    "description": "Deprecated use ignoreSavedLayout instead",
                     "type": "boolean",
                     "default": false
                 },
                 "shutdownApplicationName": {
-                    "description": "Specify another application to be started in order to shut down XXXXX application’s instances",
+                    "description": "Specify another application to be started in order to shut down the current application instances.",
                     "type": "string"
                 },
                 "activityTarget": {
                     "$ref": "#/definitions/activityTarget"
                 },
                 "icon": {
-                    "description": "URL of the application icon",
+                    "description": "URL or the Base64 encoding (only the data part from the URI scheme) of the icon used as a taskbar icon for the application.",
                     "type": "string"
                 },
                 "disabled": {
-                    "description": "If true the application will be disabled",
+                    "description": "If `true`, the application will be disabled.",
                     "type": "boolean",
                     "default": false
                 },
                 "hidden": {
-                    "description": "If true the application will not be visible in AppManager",
+                    "description": "If `true`, the application will not be visible in the App Manager.",
                     "type": "boolean",
                     "default": false
                 },
                 "allowMultiple": {
-                    "description": "If true multiple instances of the application can be started",
+                    "description": "If `true`, multiple instances of the application can be started.",
                     "type": "boolean",
                     "default": true
                 },
                 "sortOrder": {
-                    "description": "Defines the order(ascending) used by ACS when sending user applications list to its clients",
+                    "description": "Defines the (ascending) order used by Glue42 Desktop when sending user applications list to its clients.",
                     "type": "integer",
                     "default": 1000
                 },
                 "saveMultipleInstances": {
-                    "description": "When is false, only the last application’s (or activity) instance will be saved in the default (startup layout). And when is true, all instances will be saved.",
+                    "description": "When `false`, only the last application (or activity) instance will be saved in the default (startup) layout. When `true`, all instances will be saved.",
                     "type": "boolean"
                 },
                 "service": {
-                    "description": "If it true, the application will not be closed during restoring layout",
+                    "description": "If `true`, the application will not be closed when restoring a layout.",
                     "type": "boolean",
                     "default": false
                 },
                 "customProperties": {
-                    "description": "These name/value pairs are send to the ACS clients and JS application manager API exposes them as well, allowing custom UI’s to interpret and use the values",
+                    "description": "These name/value pairs are sent to the Glue42 Desktop clients. The Application Manager API exposes them as well, allowing custom UI's to interpret and use the values.",
                     "type": "object"
                 }
             }
@@ -157,211 +167,179 @@ const schema ={
         "window": {
             "title": "WindowConfig",
             "type": "object",
-            "description": "Single window application",
+            "description": "Single window application.",
             "additionalProperties": false,
             "properties": {
                 "url": {
-                    "description": "Initial URL that will be loaded when new HTML container host window is created.",
+                    "description": "Initial URL loaded when a new HTML container host window is created.",
                     "type": "string"
                 },
                 "name": {
-                    "description": "This is required parameter for the HTML container host CreateWindow call. ACS supports internal macros in window name used for have different window names in different scenarios.",
+                    "description": "This is a required parameter for the HTML container host `CreateWindow()` call. Glue42 Desktop supports internal macros in the window `name`, in order to have different window names in different scenarios.",
                     "type": "string"
                 },
                 "isSticky": {
-                    "description": "If true, newly created window will participate in sticky windows operations.",
+                    "description": "If `true`, the newly created window will participate in sticky window operations.",
                     "type": "boolean",
                     "default": true
                 },
                 "left": {
-                    "description": "Coordinate on the horizontal axis, allows context macros expansion",
+                    "description": "Coordinate on the horizontal axis, allows context macros expansion.",
                     "type": "integer",
                     "default": 0
                 },
                 "top": {
-                    "description": "Coordinate on the vertical axis, allows context macros expansion",
+                    "description": "Coordinate on the vertical axis, allows context macros expansion.",
                     "type": "integer",
                     "default": 0
                 },
                 "width": {
-                    "description": "Width of the app's window, allows context macros expansion",
+                    "description": "Width of the app window, allows context macros expansion.",
                     "type": "integer",
                     "default": 400
                 },
                 "height": {
-                    "description": "Height of the app's window, allows context macros expansion",
+                    "description": "Height of the app window, allows context macros expansion.",
                     "type": "integer",
                     "default": 400
                 },
                 "allowClose": {
-                    "description": "If false window will not contain close button",
+                    "description": "If `false`, the window will not contain a close button.",
                     "type": "boolean",
                     "default": true
                 },
                 "allowTabClose": {
-                    "description": "If false tab header will not contain close button",
+                    "description": "If `false`, the tab header will not contain a close button.",
                     "type": "boolean",
                     "default": true
                 },
                 "allowCollapse": {
-                    "description": "If false window will not contain collapse button",
+                    "description": "If `false`, the window will not contain a collapse button.",
                     "type": "boolean",
                     "default": true
                 },
                 "allowForward": {
-                    "description": "If false window will not contain activity related forward button",
+                    "description": "If `false`, the window will not contain an activity related forward button.",
                     "type": "boolean",
                     "default": true
                 },
                 "allowMaximize": {
-                    "description": "If false window will not contain maximize button",
+                    "description": "If `false`, the window will not contain a maximize button.",
                     "type": "boolean",
                     "default": true
                 },
                 "allowMinimize": {
-                    "description": "If false window will not contain minimize button",
+                    "description": "If `false`,the window will not contain a minimize button.",
                     "type": "boolean",
                     "default": true
                 },
                 "allowUnstick": {
-                    "description": "If false window won’t be able to be unstuck",
+                    "description": "If `false`, the window will not be able to be unstuck.",
                     "type": "boolean",
                     "default": true
                 },
                 "allowChannels": {
-                    "description": "If false window won’t show channel selector",
+                    "description": "If `false`, the window will not show the channel selector.",
                     "type": "boolean",
                     "default": false
                 },
                 "allowLockUnlock": {
-                    "description": "If false window will not contain lock/unlock button",
+                    "description": "If `false`, the window will not contain a lock/unlock button.",
                     "type": "boolean",
                     "default": false
                 },
                 "autoSnap": {
-                    "description": "If true when move operation ends the window will snap to the one of the approaching edges (if any the approaching edges are marked with red)",
+                    "description": "If `true`, when the move operation ends the window will snap to one of the approaching edges of another window (if any of the approaching edges are marked with red).",
                     "type": "boolean",
                     "default": true
                 },
                 "autoAlign": {
-                    "description": "When true a snapped window will adjust its bounds in order to have equal width/height and/or to occupy the space between other windows (if any)",
+                    "description": "When `true`, a snapped window will adjust its bounds in order to have equal width/height and/or to occupy the space between other windows (if any).",
                     "type": "boolean",
                     "default": true
                 },
-                "base64ImageSource": {
-                    "description": "Image as Base64 string that will be used as taskbar icon for the window",
-                    "type": "string"
-                },
-                "iconURL": {
-                    "description": "URL of the icon that will be used as taskbar icon for the window",
+                "icon": {
+                    "description": "URL or the Base64 encoding (only the data part from the URI scheme) of the icon used as a taskbar icon for the window. If not specified, it will use the icon from the application configuration.",
                     "type": "string"
                 },
                 "borderColor": {
-                    "description": "Can be a colour name such as Red, or a hex-encoded RGB or ARGB value",
+                    "description": "Can be a colour name, such as \"red\", or a hex-encoded RGB or ARGB value.",
                     "type": "string"
                 },
                 "backgroundColor": {
-                    "description": "Background colour of electron window. Can be a 6 or 3 digit hex value (#7FA or #1A2B30).",
+                    "description": "Background colour of the Electron window. Can be a 6 or a 3 digit hex value (#7FA or #1A2B30).",
                     "type": "string",
                     "pattern": "^#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})$"
                 },
                 "collapseHeight": {
-                    "description": "Defines the height of the window when collapsed",
+                    "description": "Defines the height of the window when collapsed.",
                     "type": "number",
                     "default": -1
                 },
                 "devToolsEnable": {
-                    "description": "If true allows opening dev console (using F12) for the new window",
+                    "description": "If `true`, allows opening a developer console (using `F12`) for the new window.",
                     "type": "boolean",
                     "default": true
                 },
                 "downloadSettings": {
-                    "description": "Object that defines file download behavior in the window",
-                    "type": "object",
-                    "additionalProperties": false,
-                    "properties": {
-                        "autoSave": {
-                            "description": "If true will auto save the file (without asking the user where to save it). If false a system save dialog will appear.",
-                            "type": "boolean",
-                            "default": true
-                        },
-                        "autoOpenPath": {
-                            "description": "If true will open the folder that contains the downloaded file after the download is completed",
-                            "type": "boolean",
-                            "default": false
-                        },
-                        "autoOpenDownload": {
-                            "description": "If true will open the download file after the download is completed",
-                            "type": "boolean",
-                            "default": false
-                        },
-                        "enable": {
-                            "description": "If true enables windows to download files",
-                            "type": "boolean",
-                            "default": true
-                        },
-                        "enableDownloadBar": {
-                            "description": "If true a download bar tracking progress will appear on the bottom of the window when downloading. If false the download process will be invisible",
-                            "type": "boolean",
-                            "default": true
-                        }
-                    }
+                    "default": {},
+                    "$ref": "system.json#/definitions/downloadConfig"
                 },
                 "isCollapsed": {
-                    "description": "If true the window will start collapsed",
+                    "description": "If `true`, the window will start collapsed.",
                     "type": "boolean",
                     "default": false
                 },
                 "isPopup": {
-                    "description": "If true the window will open as popup, sharing lifetime and environment with the opener",
+                    "description": "If `true`, the window will open as a pop-up, sharing the lifetime and environment of the opener.",
                     "type": "boolean",
                     "default": false
                 },
                 "focus": {
-                    "description": "If false window will not take focus when created",
+                    "description": "If `false`, the window will not take focus when created.",
                     "type": "boolean",
                     "default": true
                 },
                 "hasMoveAreas": {
-                    "description": "If false a window in HTML mode can not be moved",
+                    "description": "If `false`, a window in HTML mode can not be moved.",
                     "type": "boolean",
                     "default": true
                 },
                 "hasSizeAreas": {
-                    "description": "If false a window cannot be resized by dragging its borders, maximizing, etc.",
+                    "description": "If `false`, a window cannot be resized by dragging its borders, maximizing, etc.",
                     "type": "boolean",
                     "default": true
                 },
                 "hidden": {
-                    "description": "If true the window will be started as hidden",
+                    "description": "If `true`, the window will start as a hidden window.",
                     "type": "boolean",
                     "default": false
                 },
                 "historyNavigationEnabled": {
-                    "description": "If true will allow users to navigate back (CTRL+Left) and forward (CTRL+Right) through the web page history",
+                    "description": "If `true`, will allow users to navigate back (`CTRL+Left`) and forward (`CTRL+Right`) through the web page history.",
                     "type": "boolean",
                     "default": true
                 },
                 "maxHeight": {
-                    "description": "Specify maximum window’s height",
+                    "description": "Specify the maximum window height.",
                     "type": "number"
                 },
                 "maxWidth": {
-                    "description": "Specify maximum window’s width",
+                    "description": "Specify the maximum window width.",
                     "type": "number"
                 },
                 "minHeight": {
-                    "description": "Specify minimum window’s height",
+                    "description": "Specify the minimum window height.",
                     "type": "number",
                     "default": 30
                 },
                 "minWidth": {
-                    "description": "Specify minimum window’s width",
+                    "description": "Specify the minimum window width.",
                     "type": "number",
                     "default": 50
                 },
                 "mode": {
-                    "description": "HTML Container window type. Possible values are flat, html, tab.",
+                    "description": "HTML Container window type. Possible values are `flat`, `html`, `tab`.",
                     "enum": [
                         "flat",
                         "tab",
@@ -371,7 +349,7 @@ const schema ={
                     "default": "flat"
                 },
                 "serviceWindow": {
-                    "description": "A legacy setting which indicates whether app should be hidden and other relevant settings set. Currently not used.",
+                    "description": "A legacy setting which indicates whether the app should be hidden (also provides other relevant settings). Currently not used.",
                     "type": "boolean",
                     "default": false
                 },
@@ -379,49 +357,49 @@ const schema ={
                     "type": "object"
                 },
                 "moveAreaThickness": {
-                    "description": "How much of the outer window area to be considered as sizing area (meaning you can move the window using it). The string value corresponded to the left, top, right, bottom borders.",
+                    "description": "How much of the outer window area is to be considered as a sizing area (meaning you can move the window using it). The string value corresponds to the left, top, right and bottom borders.",
                     "type": "string",
                     "default": "0, 12, 0, 0",
                     "pattern": "^(?:[0-9 ]+,)*[0-9 ]+$"
                 },
                 "moveAreaTopMargin": {
-                    "description": "HTML Container window can contains move area thickness top margin. The margin is related to the top border of ‘moveAreaThickness’ only. The string value corresponded to the left, top, right, bottom",
+                    "description": "The HTML Container window can contain a move area thickness top margin. The margin is related to the top border of `moveAreaThickness` only. The string value corresponds to the left, top, right and bottom.",
                     "type": "string",
                     "default": "0, 0, 0, 0",
                     "pattern": "^(?:[0-9 ]+,)*[0-9 ]+$"
                 },
                 "onTop": {
-                    "description": "If true window will appear in the topmost z-order",
+                    "description": "If `true`, the window will appear on top of the Z-order.",
                     "type": "boolean",
                     "default": false
                 },
                 "relativeTo": {
-                    "description": "The window id of the window that will be used to relatively position the new window. Can be combined with relativeDirection",
+                    "description": "The window ID of the window that will be used to relatively position the new window. Can be combined with `relativeDirection`.",
                     "type": "string"
                 },
                 "relativeDirection": {
-                    "description": "Direction (bottom, top, left, right) of positioning the window relatively to relativeTo window. Considered only if relativeTo is supplied",
+                    "description": "Direction (`bottom`, `top`, `left`, `right`) of positioning the window relatively to the `relativeTo` window. Considered only if `relativeTo` is supplied.",
                     "type": "string",
                     "default": "right"
                 },
                 "showInTaskbar": {
-                    "description": "If false window will not appear into the windows taskbar",
+                    "description": "If `false`, the window will not appear in the taskbar.",
                     "type": "boolean",
                     "default": true
                 },
                 "showTitleBar": {
-                    "description": "Whether window will have a window title bar",
+                    "description": "Whether the window will have a window title bar.",
                     "type": "boolean",
                     "default": true
                 },
                 "sizeAreaThickness": {
-                    "description": "How much of the outer window area to be considered as sizing area (meaning you can resize using that area) . The string value corresponded to the left, top, right, bottom borders",
+                    "description": "How much of the outer window area is to be considered as a sizing area (meaning you can resize the window using it). The string value corresponds to the left, top, right and bottom borders.",
                     "type": "string",
                     "default": "5, 5, 5, 5",
                     "pattern": "^(?:[0-9 ]+,)*[0-9 ]+$"
                 },
                 "snappingEdges": {
-                    "description": "Specifies active Sticky Window snapping edges. Possible combinations are: top, left, right, bottom, all and any combination of them (e.g. left, right)",
+                    "description": "Specifies the active Sticky Window snapping edges. Possible combinations are: `top`, `left`, `right`, `bottom`, `all` and any combination of them (e.g. `left, right`).",
                     "type": "string",
                     "default": "all"
                 },
@@ -462,7 +440,7 @@ const schema ={
                                     ]
                                 },
                                 "display": {
-                                    "description": "The identify number of the monitor like 1,2,3 or 'main'",
+                                    "description": "The identifying number of the monitor (e.g., 1, 2, 3 or \"main\")",
                                     "type": "string"
                                 }
                             },
@@ -471,137 +449,126 @@ const schema ={
                     ]
                 },
                 "frameColor": {
-                    "description": "Specifies sticky frame color. Accepts hex color as string (e.g. #666666) or named Html colors (e.g. 'red')",
+                    "description": "Specifies the sticky frame color. Accepts hex color as a string (e.g., `#666666`) or named HTML colors (e.g., `red`)",
                     "type": "string"
                 },
                 "stickyFrameColor": {
-                    "description": "Specifies the color which indicates on which side the windows will stick",
+                    "description": "Specifies the color that indicates on which side the windows will stick.",
                     "type": "string",
                     "default": "#5b8dc9"
                 },
                 "stickyGroup": {
-                    "description": "If set the sticky window can only stick to windows that have the same group.",
+                    "description": "If set, the sticky window can only stick to windows that belong to the same group.",
                     "type": "string",
                     "default": "Any"
                 },
                 "tabGroupId": {
-                    "description": "Specifies tab’s group id. If two or more tab windows are defined with same id they will be hosted into the same tab window",
+                    "description": "Specifies the tab group ID. If two or more tab windows are defined with same ID, they will be hosted in the same tab window.",
                     "type": "string"
                 },
                 "tabIndex": {
-                    "description": "Specifies tab’s position index. Tab windows in the same tab group are ordered by their position index. Use negative index to make the tab active.",
+                    "description": "Specifies the tab position index. Tab windows in the same tab group are ordered by their position index. Use negative index to make the tab active.",
                     "type": "number"
                 },
                 "tabSelected": {
-                    "description": "Tab selected",
+                    "description": "Tab selected.",
                     "type": "boolean",
                     "default": true
                 },
                 "tabTitle": {
-                    "description": "Tab title",
+                    "description": "Tab title.",
                     "type": "string",
                     "default": ""
                 },
                 "tabWidth": {
-                    "description": "Specifies tab’s width",
+                    "description": "Specifies the tab width.",
                     "type": "number",
                     "default": 0
                 },
                 "hideTabHeader": {
-                    "description": "Hides the tab header",
+                    "description": "Hides the tab header.",
                     "type": "boolean",
                     "default": false
                 },
                 "tabToolTip": {
-                    "description": "Tab tooltip",
+                    "description": "Tab tooltip.",
                     "type": "string",
                     "default": ""
                 },
                 "title": {
-                    "description": "Sets the window title. To work properly there should be a title HTML tag in the page",
+                    "description": "Sets the window title. To work properly, there should be a title HTML tag in the page.",
                     "type": "string"
                 },
                 "loader": {
-                    "description": "Object that defines loader behavior",
+                    "description": "Object that defines loader behavior.",
                     "type": "object",
                     "additionalProperties": false,
-                    "default": {
-                        "enabled": true,
-                        "type": "DoubleBounce",
-                        "background": "#1C2D3B",
-                        "speed": 1,
-                        "size": 1,
-                        "sizeFactor": 0.3,
-                        "hideOnLoad": true,
-                        "text": "Loading",
-                        "textSize": 12,
-                        "textColor": "#F1F1F1"
-                    },
+                    "default": {},
                     "properties": {
                         "enabled": {
-                            "description": "If true enables page loaders",
+                            "description": "If `true`, enables page loaders.",
                             "type": "boolean",
                             "default": true
                         },
                         "type": {
-                            "description": "The loader animation type; Check Loader animation for possible options",
+                            "description": "The loader animation type. Check \"Loader Animations\" for possible options.",
                             "type": "string",
                             "default": "DoubleBounce"
                         },
                         "background": {
-                            "description": "Changes the background of the loader page. Accepts hex color as string (e.g. `#666666`) or named Html colors (e.g. `red`)",
+                            "description": "Changes the background of the loader page. Accepts hex color as a string (e.g., `#666666`) or named HTML colors (e.g., `red`).",
                             "type": "string",
                             "default": "#1C2D3B"
                         },
                         "speed": {
-                            "description": "Changes the animation speed, where bigger number means faster animation.",
+                            "description": "Changes the animation speed. A bigger number means faster animation.",
                             "type": "number",
                             "default": 1
                         },
                         "size": {
-                            "description": "Use this to set an absolute size to the loader animation in pixels. Not that not all loader types support that settings check here",
+                            "description": "Use this to set an absolute size to the loader animation in pixels. Note that not all loader types support that setting.",
                             "type": "number",
                             "default": 1
                         },
                         "sizeFactor": {
-                            "description": "Use this to set a size to the loader animation as a factor of the window size",
+                            "description": "Use this to set the size of the loader animation as a factor of the window size.",
                             "type": "number",
                             "default": 0.3
                         },
                         "hideOnLoad": {
-                            "description": "Use this in order to hide the loader once the page is loaded",
+                            "description": "Use this to hide the loader once the page is loaded.",
                             "type": "boolean",
                             "default": true
                         },
                         "text": {
-                            "description": "Use this in order to display text into the loading page.",
+                            "description": "Use this to display text on the loading page.",
                             "type": "string",
                             "default": "Loading"
                         },
                         "textSize": {
-                            "description": "Use this to set loader text font size",
+                            "description": "Use this to set loader text font size.",
                             "type": "number",
                             "default": 12
                         },
                         "textColor": {
-                            "description": "Use this to set loader text fore color. Accepts hex color as string (e.g. #666666\") or named Html colors (e.g. 'red’)",
+                            "description": "Use this to set loader text color. Accepts hex color as a string (e.g., `#666666`) or named HTML colors (e.g., `red`).",
                             "type": "string",
                             "default": "#F1F1F1"
                         }
                     }
                 },
                 "useRandomFrameColor": {
-                    "description": "If true will set a random (from a predefined list of colors) frame color to the new window",
+                    "description": "If `true`, will set a random (from a predefined list of colors) frame color to the new window.",
                     "type": "boolean",
                     "default": false
                 },
                 "windowState": {
-                    "description": "If set window will start in the specified state (maximized, minimized, normal)",
+                    "description": "If set, the window will start in the specified state (maximized, minimized, normal).",
                     "type": "string",
                     "default": "normal"
                 },
                 "injectGlue": {
-                    "description": "This is true/false or object that will be used to init glue",
+                    "description": "This is `true`/`false` or an object that will be used to initiate Glue42.",
                     "type": "object",
                     "required": [
                         "version"
@@ -610,7 +577,7 @@ const schema ={
                     "properties": {
                         "version": {
                             "type": "string",
-                            "description": "Can be some version string"
+                            "description": "Can be a version string."
                         },
                         "autoInit": {
                             "default": false,
@@ -627,53 +594,56 @@ const schema ={
                     }
                 },
                 "context": {
-                    "description": "Custom object associated with the window",
+                    "description": "Custom object associated with the window.",
                     "type": "object"
                 },
                 "autoOpenDevTools": {
-                    "description": "If set dev tools will start automatically",
+                    "description": "If set, dev tools will start automatically.",
                     "type": "boolean",
                     "default": false
                 },
                 "processAffinity": {
-                    "description": "Controls process reuse",
+                    "description": "Controls process reuse.",
                     "default": true,
                     "oneOf": [
                         {
-                            "description": "Whether process reuse is enabled for that window",
+                            "description": "Whether process reuse is enabled for that window.",
                             "type": "boolean"
                         },
                         {
-                            "description": "Process affinity tag (windows with the same tag will be merged together)",
+                            "description": "Process affinity tag (windows with the same tag will be merged together).",
                             "type": "string"
                         }
                     ]
                 },
                 "sfMode": {
-                    "description": " Set to true to run the window in Salesforce mode (resolving the issues that prevent SF to run in desktop container)",
+                    "description": "Set to `true` to run the window in Salesforce mode (resolving the issues preventing Salesforce to run in a desktop container).",
                     "type": "boolean",
                     "default": false
                 },
                 "registerHtmlContainer": {
-                    "description": "Whatever to inject the htmlContainer object. It will be used for legacy application.",
+                    "description": "Whether to inject the `htmlContainer` object. It will be used for legacy applications.",
                     "type": "boolean",
                     "default": false
                 },
                 "channelId": {
-                    "description": "Id of the channel",
+                    "description": "ID of the channel.",
                     "type": "string"
                 },
                 "canvasPlacement": {
                     "$ref": "#/definitions/canvasPlacement"
                 },
                 "contextMenuEnabled": {
-                    "description": "When set to true will enable the native browser context menu.",
+                    "description": "When set to `true`, will enable the native browser context menu.",
                     "type": "boolean"
                 },
                 "contextMenuMode": {
-                    "description": "Supported values: native and custom. If native then it will be shown native menu otherwise it will be invoked AGM method with context menu and spell check info.",
+                    "description": "Supported values: `native` and `custom`. If `native`, then the native menu will be shown. Otherwise, an Interop method will be invoked with context menu and spell check info.",
                     "type": "string",
                     "default": "native"
+                },
+                "security": {
+                    "$ref": "system.json#/definitions/securityConfig"
                 }
             },
             "required": [
@@ -683,7 +653,7 @@ const schema ={
         "activity": {
             "title": "activityConfig",
             "type": "object",
-            "description": "Defines an activity as set of an activity window types; also defines the other activity related parameters (like layout and initial context)",
+            "description": "Defines an activity as a set of activity window types. Also defines the other activity related parameters (like layout and initial context).",
             "additionalProperties": false,
             "properties": {
                 "activityType": {
@@ -702,28 +672,28 @@ const schema ={
                     "$ref": "#/definitions/activityLayout"
                 },
                 "initialContext": {
-                    "description": "Initial activity context in JSON format (not parsed for now and used as is).",
+                    "description": "Initial activity context in a JSON format (not parsed for now and used as is).",
                     "type": "object"
                 },
                 "hideGroupHeader": {
-                    "description": "If true, there will be no header for all window groups that have a XXXXX activity window",
+                    "description": "If `true`, there will be no header for any window groups that are in the activity window.",
                     "type": "boolean"
                 },
                 "autoSaveContext": {
-                    "description": "Activity context can be saved as a part of saved layout. And activity owner’s window (JS code) can register a callback to describe the members of the context that should be saved. But if no handler is registered, then by default no activity context will be saved. And using this option and setting its value to true, the user has an option to save activity context for legacy applications, i.e. these that don’t have a the above described callback registered.",
+                    "description": "Activity context can be saved as part of a saved layout. The activity owner window (the JavaScript code) can register a callback to describe the members of the context that should be saved. If no handler is registered, then by default no activity context will be saved. By using this option and setting its value to `true`, the user has an option to save activity context for legacy applications (i.e. these that haven't registered such callbacks).",
                     "type": "boolean"
                 },
                 "saveOwnerOnly": {
-                    "description": "When activity application is saved, by default only the activity owner window information will be stored. This will work “out of the box” for legacy activities which don’t support save/restore layouts and context.And when this is false, all activity windows (or ones configured using the options below) will be saved. Default is from acs.properties.",
+                    "description": "When an activity application is saved, by default only the activity owner window information will be stored. This will \"work out of the box\" for legacy activities that don’t support saving/restoring layouts and contexts. When this is `false`, all activity windows (or the ones configured using the options below) will be saved.",
                     "type": "boolean",
                     "default": true
                 },
                 "includeTypesToLayout": {
-                    "description": "Comma separated list of window types (specified above) which should be included in the activity application auto-saved layout.",
+                    "description": "Comma separated list of window types which should be included in the activity application auto-saved layout.",
                     "type": "string"
                 },
                 "ignoreTypesFromLayout": {
-                    "description": "Comma separated list of window types (specified above) which should be excluded in the activity application auto-saved layout. Note that ignoreTypesFromLayout has priority, i.e. if window type is defined in both lists, it will be excluded. Also if includeTypesToLayout is specified but not ignoreTypesFromLayout, then the types in includeTypesToLayout list will be included in th layout and the rest excluded.And vise versa – if ignoreTypesFromLayout is specified but not includeTypesToLayout,then the types defined in ignoreTypesFromLayout will be excluded and the rest included.",
+                    "description": "Comma separated list of window types which should be excluded from the activity application auto-saved layout. Note that `ignoreTypesFromLayout` has priority, i.e. if a window type is defined in both lists, it will be excluded. Also, if `includeTypesToLayout` is specified but not `ignoreTypesFromLayout`, then the types in the `includeTypesToLayout` list will be included in the layout and the rest will be excluded and vice versa.",
                     "type": "string"
                 }
             },
@@ -734,33 +704,33 @@ const schema ={
         "exe": {
             "title": "EXEConfig",
             "type": "object",
-            "description": "Executable application - could be anything that OS can execute via the appropriate system calls",
+            "description": "Executable application. Could be anything that the OS can execute via the appropriate system calls.",
             "additionalProperties": false,
             "properties": {
                 "showConsole": {
-                    "description": "If true, the console will be visible",
+                    "description": "If `true`, the console will be visible.",
                     "type": "boolean",
                     "default": false
                 },
                 "useShellExecute": {
-                    "description": "If true, path is not used (and must be empty) and command specified could contains well known resource type (like URL) which will be executed via the “shell execute” option, i.e. using the associated application. Note that useShellExecute=true is not compatible with trackingType=Environment",
+                    "description": "If `true`, `path` is not used (and must be empty) and the specified command can contain a well known resource type (like URL) which will be executed via the \"shell execute\" option, i.e. using the associated application. Note that `useShellExecute=true` is not compatible with `trackingType=Environment`.",
                     "type": "boolean",
                     "default": false
                 },
                 "path": {
-                    "description": "This is the working directory of the target application/script and could either relative to the ACS startup directory or an absolute path. The path must exist, and will be combined to the command parameter, if it doesn’t contain root drive. Required if shellExecute is false, otherwise must be empty",
+                    "description": "This is the working directory of the target application/script and could either be relative to the Glue42 Desktop startup directory, or an absolute path. The path must exist and will be combined with the command parameter, if it doesn’t contain a root drive. Required, if `shellExecute` is false, otherwise must be empty.",
                     "type": "string"
                 },
                 "command": {
-                    "description": "This is the target application/script that will be executed (when useShellExecute=false) or a resource that will be opened via an associated application if useShellExecute=true. When useShellExecute=false, command target file must exist. It could contain relative (to the ACS startup folder) file path or an absolute.",
+                    "description": "This is the target application/script that will be executed (when `useShellExecute=false`) or a resource that will be opened via an associated application if `useShellExecute=true`. When `useShellExecute=false`, a command target file must exist. It could contain relative (to the Glue42 Desktop startup folder) or an absolute file path.",
                     "type": "string"
                 },
                 "parameters": {
-                    "description": "Optional parameters that will be used when starting the target application/script or opening the resource. The content is used as is,no checks performed.",
+                    "description": "Optional parameters that will be used when starting the target application/script or opening the resource. The content is used as is, no checks performed.",
                     "type": "string"
                 },
                 "windowStyle": {
-                    "description": "Specifies the target’s main window style (if supported).",
+                    "description": "Specifies the target's main window style (if supported).",
                     "enum": [
                         "Normal",
                         "Hidden",
@@ -770,7 +740,7 @@ const schema ={
                     "default": "Normal"
                 },
                 "trackingType": {
-                    "description": "Specifies how to track the target application’s process lifetime, i.e. to determine when it is started and stopped.",
+                    "description": "Specifies how to track the lifetime of the target application process , i.e. to determine when it is started and stopped.",
                     "enum": [
                         "None",
                         "Process",
@@ -781,45 +751,45 @@ const schema ={
                     "default": "Process"
                 },
                 "targetProcess": {
-                    "description": "Specifies target process name which should be found and checked for passed special environment values - this way finding the stated process ID. Used when trackingType=Environment.",
+                    "description": "Specifies the target process name which should be found and checked for passed special environment values, this way finding the stated process ID. Used when `trackingType=Environment`.",
                     "type": "string"
                 },
                 "passGlueToken": {
-                    "description": "This option is valid for external user applications and if it is true, when they are started a valid GW3 token will be sent.",
+                    "description": "This option is valid for external user applications and if it is `true`, when they are started a valid GW3 token will be sent.",
                     "type": "boolean",
                     "default": false
                 },
                 "glueTokenArgument": {
-                    "description": "The name of the token argument",
+                    "description": "The name of the token argument.",
                     "type": "string",
                     "default": "--token"
                 },
                 "left": {
-                    "description": "Coordinate on the horizontal axis, allows context macros expansion",
+                    "description": "Coordinate on the horizontal axis, allows context macros expansion.",
                     "type": "integer",
                     "default": 0
                 },
                 "top": {
-                    "description": "Coordinate on the vertical axis, allows context macros expansion",
+                    "description": "Coordinate on the vertical axis, allows context macros expansion.",
                     "type": "integer",
                     "default": 0
                 },
                 "width": {
-                    "description": "Width of the app's window, allows context macros expansion",
+                    "description": "Width of the app window, allows context macros expansion.",
                     "type": "integer",
                     "default": 400
                 },
                 "height": {
-                    "description": "Height of the app's window, allows context macros expansion",
+                    "description": "Height of the app window, allows context macros expansion.",
                     "type": "integer",
                     "default": 400
                 },
                 "tabGroupId": {
-                    "description": "Specifies tab’s group id. If two or more tab windows are defined with same id they will be hosted into the same tab window",
+                    "description": "Specifies the tab group ID. If two or more tab windows are defined with same ID, they will be hosted in the same tab window.",
                     "type": "string"
                 },
                 "mode": {
-                    "description": "HTML Container window type. Possible values are flat, html, tab.",
+                    "description": "HTML Container window type. Possible values are `flat`, `html`, `tab`.",
                     "enum": [
                         "flat",
                         "tab",
@@ -829,37 +799,37 @@ const schema ={
                     "default": "flat"
                 },
                 "tabIndex": {
-                    "description": "Specifies tab’s position index. Tab windows in the same tab group are ordered by their position index. Use negative index to make the tab active.",
+                    "description": "Specifies the tab position index. Tab windows in the same tab group are ordered by their position index. Use negative index to make the tab active.",
                     "type": "number"
                 },
                 "relativeTo": {
-                    "description": "The window id of the window that will be used to relatively position the new window. Can be combined with relativeDirection",
+                    "description": "The window ID of the window that will be used to relatively position the new window. Can be combined with `relativeDirection`",
                     "type": "string"
                 },
                 "relativeDirection": {
-                    "description": "Direction (bottom, top, left, right) of positioning the window relatively to relativeTo window. Considered only if relativeTo is supplied",
+                    "description": "Direction (`bottom`, `top`, `left`, `right`) of positioning the window relatively to the `relativeTo` window. Considered only if `relativeTo` is supplied.",
                     "type": "string",
                     "default": "right"
                 },
                 "allowChannels": {
-                    "description": "If false window won’t show channel selector",
+                    "description": "If `false`, the window will not show the channel selector.",
                     "type": "boolean",
                     "default": false
                 },
                 "channelId": {
-                    "description": "Id of the channel",
+                    "description": "ID of the channel.",
                     "type": "string"
                 },
                 "canvasPlacement": {
                     "$ref": "#/definitions/canvasPlacement"
                 },
                 "logging": {
-                    "description": "If true, the stdout and stderr will be saved in the log folder under 'application' folder with the name of the application",
+                    "description": "If `true`, the `stdout` and `stderr` will be saved in the log folder under the `application` folder with the name of the application.",
                     "type": "boolean",
                     "default": false
                 },
                 "startFailedMessage": {
-                    "description": "Error message that should be displayed to users if the exe fails to start",
+                    "description": "Error message that should be displayed to users if the `exe` fails to start.",
                     "type": "string"
                 }
             }
@@ -867,33 +837,33 @@ const schema ={
         "node": {
             "title": "NodeConfig",
             "type": "object",
-            "description": "Node application ",
+            "description": "Node application",
             "additionalProperties": false,
             "properties": {
                 "showConsole": {
-                    "description": "If true, the console of the Node.js script the will be visible",
+                    "description": "If `true`, the console of the Node.js script will be visible,",
                     "type": "boolean",
                     "default": false
                 },
                 "path": {
-                    "description": "This is path to the JavaScript file to be executed in Node.js",
+                    "description": "This is the path to the JavaScript file to be executed in `Node.js`.",
                     "type": "string"
                 },
                 "passGlueToken": {
-                    "description": "If it is true, when they are started a valid GW3 token will be set as environment variable - gwToken.",
+                    "description": "If `true`, when the app is started, a valid GW3 token will be set as an environment variable - `gwToken`.",
                     "type": "boolean",
                     "default": false
                 },
                 "debug": {
-                    "description": "Enable debugging. Same as inspect",
+                    "description": "Enable debugging. Same as inspect.",
                     "default": false,
                     "oneOf": [
                         {
-                            "description": "Enable debugging on the default port 9229",
+                            "description": "Enable debugging on the default port 9229.",
                             "type": "boolean"
                         },
                         {
-                            "description": "Enable debugging on port",
+                            "description": "Enable debugging on port.",
                             "type": "string",
                             "additionalProperties": false
                         }
@@ -901,15 +871,15 @@ const schema ={
                     "additionalProperties": false
                 },
                 "inspect": {
-                    "description": "Enable inspector agent. If boolean listen on default address and port (127.0.0.1:9229). If number listens on the port number",
+                    "description": "Enable the inspector agent. If `boolean`, listens on the default address and port (127.0.0.1:9229). If `number`, listens on the port number.",
                     "default": false,
                     "oneOf": [
                         {
-                            "description": "Enable debugging on the default port 9229",
+                            "description": "Enable debugging on the default port 9229.",
                             "type": "boolean"
                         },
                         {
-                            "description": "Enable debugging on port",
+                            "description": "Enable debugging on port.",
                             "type": "number",
                             "additionalProperties": false
                         }
@@ -917,15 +887,15 @@ const schema ={
                     "additionalProperties": false
                 },
                 "inspectBrk": {
-                    "description": "Enable inspector agent and break before user code starts. If boolean listen on default address and port (127.0.0.1:9229). If number listens on the port number",
+                    "description": "Enable the inspector agent and break before the user code starts. If `boolean`, listens on the default address and port (127.0.0.1:9229). If `number`, listens on the port number.",
                     "default": false,
                     "oneOf": [
                         {
-                            "description": "Enable debugging on the default port 9229",
+                            "description": "Enable debugging on the default port 9229.",
                             "type": "boolean"
                         },
                         {
-                            "description": "Enable debugging on port",
+                            "description": "Enable debugging on port.",
                             "type": "number",
                             "additionalProperties": false
                         }
@@ -941,32 +911,32 @@ const schema ={
         "activityWindow": {
             "title": "activityWindow",
             "type": "object",
-            "description": "A window which takes part in an activity and may or may not be the owner",
+            "description": "A window which takes part in an activity and may or may not be the owner.",
             "additionalProperties": false,
             "properties": {
                 "type": {
-                    "description": "The application identifier",
+                    "description": "The application identifier.",
                     "type": "string"
                 },
                 "name": {
-                    "description": "The name of the application",
+                    "description": "The name of the application.",
                     "type": "string"
                 },
                 "left": {
-                    "description": "Coordinate on the horizontal axis",
+                    "description": "Coordinate on the horizontal axis.",
                     "type": "integer"
                 },
                 "top": {
-                    "description": "Coordinate on the vertical axis",
+                    "description": "Coordinate on the vertical axis.",
                     "type": "integer"
                 },
                 "width": {
-                    "description": "Width of the app's window",
+                    "description": "Width of the app window.",
                     "type": "integer",
                     "default": 400
                 },
                 "height": {
-                    "description": "Height of the app's window",
+                    "description": "Height of the app window.",
                     "type": "integer",
                     "default": 400
                 }
@@ -983,7 +953,7 @@ const schema ={
         "activityLayout": {
             "title": "activityLayout",
             "type": "object",
-            "description": "Specifies the mode and cellSize of the layout.",
+            "description": "Specifies the `mode` and `cellSize` of the layout.",
             "additionalProperties": false,
             "properties": {
                 "mode": {
@@ -1009,27 +979,27 @@ const schema ={
                         "string",
                         "integer"
                     ],
-                    "description": "Can specify the target screen by its index or as 'main' to indicate the primary display device."
+                    "description": "Can specify the target screen by index or \"main\" to indicate the primary display device."
                 }
             }
         },
         "activityTarget": {
             "title": "activityTarget",
             "type": "object",
-            "description": "Specifies how this application will be registered as an activity window",
+            "description": "Specifies how this application will be registered as an activity window.",
             "additionalProperties": false,
             "properties": {
                 "enabled": {
-                    "description": "Whether to register the application as an activity window",
+                    "description": "Whether to register the application as an activity window.",
                     "type": "boolean",
                     "default": false
                 },
                 "windowType": {
-                    "description": "Specifies the activity window type that will be associated with this application, i.e. when there is a request from the activity manager to create this type, an application instance is started. Defaults to the application's name.",
+                    "description": "Specifies the activity window type that will be associated with this application, i.e. when there is a request from the activity manager to create this type, an application instance is started. Defaults to the application name.",
                     "type": "string"
                 },
                 "isIndependent": {
-                    "description": "Whether this activity window type can act as an independent window,i.e. to belong to any activity.",
+                    "description": "Whether this activity window type can act as an independent window, i.e. to belong to any activity.",
                     "type": "boolean",
                     "default": false
                 }
@@ -1041,7 +1011,7 @@ const schema ={
         "canvas": {
             "title": "canvasConfig",
             "type": "object",
-            "description": "Defines a canvas layout",
+            "description": "Defines a canvas layout.",
             "additionalProperties": false,
             "properties": {
                 "lanes": {
@@ -1090,25 +1060,25 @@ const schema ={
                     "additionalProperties": false,
                     "properties": {
                         "left": {
-                            "description": "Coordinate on the horizontal axis",
+                            "description": "Coordinate on the horizontal axis.",
                             "type": "integer"
                         },
                         "top": {
-                            "description": "Coordinate on the vertical axis",
+                            "description": "Coordinate on the vertical axis.",
                             "type": "integer"
                         },
                         "width": {
-                            "description": "Width of the app's window",
+                            "description": "Width of the app window.",
                             "type": "integer"
                         },
                         "height": {
-                            "description": "Height of the app's window",
+                            "description": "Height of the app window.",
                             "type": "integer"
                         }
                     }
                 },
                 "windowState": {
-                    "description": "If set window will start in the specified state (maximized, minimized, normal)",
+                    "description": "If set, the window will start in the specified state (maximized, minimized, normal)",
                     "type": "string"
                 }
             },
@@ -1136,7 +1106,7 @@ const schema ={
                 },
                 "showFrame": {
                     "type": "boolean"
-                },
+                },               
                 "tabGroup": {
                     "type": "string"
                 },
@@ -1213,6 +1183,9 @@ const schema ={
                 "showFrame": {
                     "type": "boolean"
                 },
+                "showBorder": {
+                    "type": "boolean"
+                },
                 "tabGroup": {
                     "type": "string"
                 },
@@ -1263,14 +1236,38 @@ const schema ={
                 },
                 "disableTileMode": {
                     "type": "boolean"
+                },
+                "canvasWindowId": {
+                    "type": "string"
+                },
+                "channelId": {
+                    "type": "string"
+                },
+                "context": {
+                    "type": "object"
+                },
+                "activityType": {
+                    "type": "string"
+                },
+                "activityId": {
+                    "type": "string"
+                },
+                "activityWindowType": {
+                    "type": "string"
+                },
+                "isOwner": {
+                    "type": "boolean"
+                },
+                "laneAllowDrop": {
+                    "type": "boolean"
+                },
+                "laneAllowResize": {
+                    "type": "boolean"
                 }
-            }
+            },
+            "additionalProperties": false
         }
     }
 };
-
-
-
-
 
 export default schema;
