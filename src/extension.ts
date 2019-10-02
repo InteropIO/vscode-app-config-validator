@@ -41,11 +41,16 @@ import configGenerator from './configGenerator';
 import commandsManager from './commandsManager';
 import { basename } from 'path';
 import errorPointer from './errorPointer';
+import { CompletionProvider } from './completionProvider';
 
 let currentError: { message: string, underLineMessage?: string };
 let statusBarItem: vscode.StatusBarItem;
 let extensionSettings: vscode.WorkspaceConfiguration;
 let diagnosticCollection: vscode.DiagnosticCollection;
+
+const completionProviderFileFilters = [
+    { scheme: 'file', language: 'json' }
+];
 
 export function activate(context: vscode.ExtensionContext) {
     statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right);
@@ -110,22 +115,33 @@ export function activate(context: vscode.ExtensionContext) {
         configGenerator.deploy(textEditor.document);
     });
 
-    const unsub = vscode.workspace.onDidSaveTextDocument((d) => {
-        triggerValidation(d);
-    });
+    vscode.languages.registerCompletionItemProvider(completionProviderFileFilters, new CompletionProvider());
 
-    const unsubOnOpen = vscode.workspace.onDidOpenTextDocument((d) => {
-        triggerValidation(d);
-    });
+    try {
+        validator.init();
 
-    const activeTextEditorChange = vscode.window.onDidChangeActiveTextEditor((txtEditor?: vscode.TextEditor) => {
-        triggerValidation(txtEditor ? txtEditor.document : undefined);
-    });
+        const unsub = vscode.workspace.onDidSaveTextDocument((d) => {
+            triggerValidation(d);
+        });
+    
+        const unsubOnOpen = vscode.workspace.onDidOpenTextDocument((d) => {
+            triggerValidation(d);
+        });
+    
+        const activeTextEditorChange = vscode.window.onDidChangeActiveTextEditor((txtEditor?: vscode.TextEditor) => {
+            triggerValidation(txtEditor ? txtEditor.document : undefined);
+        });
+    
+        context.subscriptions.push(unsub);
+        context.subscriptions.push(unsubOnOpen);
+        context.subscriptions.push(activeTextEditorChange);
 
-    context.subscriptions.push(unsub);
-    context.subscriptions.push(unsubOnOpen);
-    context.subscriptions.push(activeTextEditorChange);
-
+    } catch (error) {
+        // The state is absolutely invalid and nothing can work properly
+        statusBarItem.tooltip = "Glue configuration validator is experiencing initialization problems.";
+        statusBarItem.show();
+    }
+   
     commandsManager.dispose(context);
 }
 
@@ -179,7 +195,6 @@ function updateDiagnostics(document: vscode.TextDocument, underlineRange?: vscod
         diagnosticCollection.clear();
     }
 }
-
 
 // this method is called when your extension is deactivated
 export function deactivate() {

@@ -8,13 +8,15 @@
  * limitations under the License.
  */
 
-import parse = require('json-to-ast');
+import * as parse from "json-to-ast";
 import * as vscode from "vscode";
+import * as jsonFixer from "json-fixer";
 
 class ErrorPointer {
     private readonly settings: parse.Options = { loc: true };
 
     public point(errorPath: string, json: string): vscode.Range {
+        json = jsonFixer(json).data;
         if (!Array.isArray(JSON.parse(json))) {
             json = "[" + json + "]";
         }
@@ -70,7 +72,10 @@ class ErrorPointer {
     }
 
     private nodeLocationToVsCodeRange(nodeLocation: parse.Location): vscode.Range {
-        return new vscode.Range(nodeLocation.start.line - 1, nodeLocation.start.column - 1, nodeLocation.end.line - 1, nodeLocation.end.column - 1);
+        return new vscode.Range(nodeLocation.start.line - 1,
+            nodeLocation.start.column - 1,
+            nodeLocation.end.line - 1,
+            nodeLocation.end.column - 1);
     }
 }
 

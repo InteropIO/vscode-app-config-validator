@@ -27,10 +27,3 @@ export const EXTENSION_NAME = "glue42-configuration-validator";
 export const STATUS_BAR_ITEM_VALID_TEXT = "Valid application configuration";
 export const STATUS_BAR_ITEM_INVALID_TEXT = "Invalid application configuration";
 
-export const WINDOW_TEMPLATE_PATH_SETTING = "glue42-configuration-validator.windowTemplatePath";
-export const ACTIVITY_TEMPLATE_PATH_SETTING = "glue42-configuration-validator.activityTemplatePath";
-export const NODE_TEMPLATE_PATH_SETTING = "glue42-configuration-validator.nodeTemplatePath";
-export const EXE_TEMPLATE_PATH_SETTING = "glue42-configuration-validator.exeTemplatePath";
-export const SERVICE_WIN_TEMPLATE_PATH_SETTING = "glue42-configuration-validator.serviceWinTemplatePath";
-
-

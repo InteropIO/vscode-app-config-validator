@@ -8,6 +8,8 @@
  * limitations under the License.
  */
 
+ // TODO: move all configs to separate json files and move the access logic to the assetProvider
+
 const windowSampleConfig = {
     "name": "SampleName",
     "title": "Sample Application",

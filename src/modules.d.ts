@@ -7,14 +7,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export interface ValidationError {
-    message: string;
-    dataPath?: string;
-    underLineMessage?: string;
-}
-
-export interface ValidationSummary {
-    isValid: Boolean;
-    error: ValidationError;
-}
+declare module "json-fixer";

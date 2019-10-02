@@ -9,12 +9,11 @@
  */
 
 import * as vscode from 'vscode';
-import glueAppSchema from './assets/glueAppSchema';
-import glueSystemSchema from "./assets/glueSystemSchema";
 import * as json5 from "json5";
 import * as ajv from "ajv";
 import errorTextComposer from "./errorTextComposer";
 import { ValidationSummary, ValidationError } from './types';
+import assetProvider from './assetProvider';
 
 class ConfigurationValidator {
     private readonly ajvVal: ajv.Ajv;
@@ -23,22 +22,26 @@ class ConfigurationValidator {
     constructor() {
         this.ajvVal = new ajv({ useDefaults: true, meta: true, jsonPointers: true });
         this.ajvVal.addMetaSchema(require('ajv/lib/refs/json-schema-draft-06.json'));
-        this.ajvVal.addSchema(JSON.parse(JSON.stringify(glueAppSchema)), "appSchema");
-        this.ajvVal.addSchema(JSON.parse(JSON.stringify(glueSystemSchema)), "systemSchema");
+    }
 
-        const appSchemaClone: any = JSON.parse(JSON.stringify(glueAppSchema));
+    public init() {
+        const glueAppSchema = assetProvider.getAppSchema();
+        const glueSystemSchema = assetProvider.getSystemSchema();
+        this.ajvVal.addSchema(JSON.parse(glueAppSchema), "appSchema");
+        this.ajvVal.addSchema(JSON.parse(glueSystemSchema), "systemSchema");
+
+        const appSchemaClone: any = JSON.parse(glueAppSchema);
         appSchemaClone.definitions.application.properties.details = { type: "object" };
         appSchemaClone.$id = `http://glue42.com/gd/${this.AppSchemaEmptyKey}`;
         this.ajvVal.addSchema(appSchemaClone, this.AppSchemaEmptyKey);
 
-        const types: string[] = appSchemaClone.definitions.application.properties.type.enum; // "window","activity","exe","node","canvas", etc.
+        const types: string[] = appSchemaClone.definitions.application.properties.type.enum;
         types.forEach((appType) => {
-            const typedSchema = JSON.parse(JSON.stringify(glueAppSchema)) as { [key: string]: any };
+            const typedSchema = JSON.parse(glueAppSchema) as { [key: string]: any };
             typedSchema.definitions.application.properties.details = typedSchema.definitions[appType];
             typedSchema.$id = `http://glue42.com/gd/application-${appType}.json`;
             this.ajvVal.addSchema(typedSchema, `application-${appType}.json`);
         });
-
     }
 
     public onChange(document: vscode.TextDocument): ValidationSummary {
@@ -54,7 +57,6 @@ class ConfigurationValidator {
                 parsedText = [parsedText];
             }
 
-            // check if the topLevel props are OK
             const isValid: boolean = this.ajvVal.validate(this.AppSchemaEmptyKey, parsedText) as boolean;
             const errors = this.ajvVal.errors ? this.ajvVal.errors.map((a) => a) : [];
 
@@ -67,7 +69,6 @@ class ConfigurationValidator {
                 };
             }
 
-            // Step2: check if the appType-specific props are OK
             const validationSummary: Array<ValidationSummary> = (parsedText as any[]).map((appDef: { type: string }) => {
 
                 const appType = appDef.type;
@@ -81,13 +82,27 @@ class ConfigurationValidator {
                 };
             });
 
-            return validationSummary[0] || { isValid: true, error: { message: "" } };
+            const invalidApplications = validationSummary.filter(a => !a.isValid);
+
+            if (invalidApplications.length === 0) {
+                return validationSummary[0] || { isValid: true, error: { message: "" } };
+            }
+
+            this.modifyDataPathPosition(invalidApplications[0], validationSummary);
+            return invalidApplications[0] || { isValid: true, error: { message: "" } };
 
         } catch (error) {
             return {
                 isValid: false,
                 error: { message: "Invalid JSON" }
             };
+        }
+    }
+
+    private modifyDataPathPosition(error: ValidationSummary, allValidationResults: Array<ValidationSummary>) {
+        const realIndex = allValidationResults.indexOf(error);
+        if (error.error.dataPath) {
+            error.error.dataPath = "/" +realIndex + error.error.dataPath.substring(2);
         }
     }
 }
