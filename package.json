@@ -1,7 +1,7 @@
 {
     "name": "glue42-configuration-validator",
-    "displayName": "Glue42 configuration validator",
-    "description": "Tool which lints the application configuration files for glue",
+    "displayName": "Glue42 Configuration Validator",
+    "description": "Tool that lints the application configuration files for Glue42 Desktop.",
     "license": "./LICENSE",
     "version": "0.2.6",
     "repository": {
@@ -24,7 +24,7 @@
         "commands": [
             {
                 "command": "glue42-configuration-validator.sayHello",
-                "title": "Hello World"
+                "title": "Hello, World!"
             },
             {
                 "command": "glue42-configuration-validator.GenWinConfig",
@@ -48,27 +48,27 @@
             },
             {
                 "command": "glue42-configuration-validator.deploy",
-                "title": "Deploy to Glue"
+                "title": "Deploy to Glue42"
             }
         ],
         "configuration": {
             "type": "object",
-            "title": "Glue configuration settings",
+            "title": "Glue42 Configuration Settings",
             "properties": {
                 "glue42-configuration-validator.overwriteContents": {
                     "type": "boolean",
                     "default": false,
-                    "description": "Overwrite existing content when generating a configuration"
+                    "description": "Overwrite existing content when generating a configuration."
                 },
                 "glue42-configuration-validator.glueDeploymentPath": {
                     "type": "string",
                     "default": "%LOCALAPPDATA%/Tick42/GlueDesktop/config/apps",
-                    "description": "Path to to the folder that Glue Desktop uses for application configurations"
+                    "description": "Path to the folder that Glue42 Desktop uses for application configurations."
                 },
                 "glue42-configuration-validator.underlineErrors": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Choose whether to underline any configuration errors in the editor"
+                    "description": "Choose whether to underline any configuration errors in the editor."
                 }
             }
         }
