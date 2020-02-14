@@ -6,7 +6,7 @@ Tool that lints the application configuration files for [Glue42 Desktop](https:/
 
 ### Real Time Validation
 
-All `.json` files will be validated on every save and on every change of the active editor. Configuration errors can be underlined, depending on configuration. An intellisense feature shows which required properties are missing from the configuration.
+All `.json` files will be validated on every save and on every change of the active editor. Configuration errors can be underlined, depending on configuration. An intellisense feature shows the properties (and their type) you can use in the configuration of the "details" object.
 
 ### Configuration Template Generation
 
