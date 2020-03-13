@@ -26,7 +26,9 @@
                         "activity",
                         "exe",
                         "node",
-                        "canvas"
+                        "canvas",
+                        "clickonce",
+                        "childWindow"
                     ]
                 },
                 "details": {
@@ -46,6 +48,12 @@
                         },
                         {
                             "$ref": "#/definitions/canvas"
+                        },
+                        {
+                            "$ref": "#/definitions/clickonce"
+                        },
+                        {
+                            "$ref": "#/definitions/childWindow"
                         }
                     ]
                 },
@@ -79,7 +87,7 @@
                     "type": "string"
                 },
                 "autoStart": {
-                    "description": "If `true`, the application will auto-start.",
+                    "description": "If `true`, the application will auto start.",
                     "type": "boolean",
                     "default": false
                 },
@@ -89,7 +97,7 @@
                     "default": 0
                 },
                 "requiresSSO": {
-                    "description": "This option is valid for system and auto-start applications and if it is `true`, they will auto-start after a successful SSO login. Note that user applications are always initialized (and this way auto-started) after SSO login., so this option is useless for them",
+                    "description": "This option is valid for system and auto start applications and if it is `true`, they will auto start after a successful SSO login. Note that user applications are always initialized (and this way auto started) after SSO login, so this option is useless for them.",
                     "type": "boolean",
                     "default": false
                 },
@@ -99,12 +107,12 @@
                     "default": false
                 },
                 "ignoreSavedLayout": {
-                    "description": "If `true`, the application default layout will not be auto-saved when it is closed and on the next start, if the layout exists, it will be ignored.",
+                    "description": "If `true`, the application default layout will not be auto saved when it is closed and on the next start, if the layout exists, it will be ignored.",
                     "type": "boolean",
                     "default": false
                 },
                 "ignoreSaveOnClose": {
-                    "description": "Deprecated use ignoreSavedLayout instead",
+                    "description": "Deprecated. Use `ignoreSavedLayout` instead.",
                     "type": "boolean",
                     "default": false
                 },
@@ -134,8 +142,18 @@
                     "type": "boolean",
                     "default": true
                 },
+                "allowCapture": {
+                    "description": "If `true`, this app will be allowed to capture display/window/group screenshots through the 'glue.displays' API",
+                    "type": "boolean",
+                    "default": false
+                },
+                "allowLogging": {
+                    "description": "If `true`, this app will be allowed to log in a custom file in 'UserData/logs/application' through the 'glue.log' API",
+                    "type": "boolean",
+                    "default": false
+                },
                 "sortOrder": {
-                    "description": "Defines the (ascending) order used by Glue42 Desktop when sending user applications list to its clients.",
+                    "description": "Defines the (ascending) order used by Glue42 Desktop when sending the user applications list to its clients.",
                     "type": "integer",
                     "default": 1000
                 },
@@ -144,13 +162,25 @@
                     "type": "boolean"
                 },
                 "service": {
-                    "description": "If `true`, the application will not be closed when restoring a layout.",
+                    "description": "If `true`, the application will not be closed when saving and restoring a layout.",
                     "type": "boolean",
                     "default": false
                 },
                 "customProperties": {
-                    "description": "These name/value pairs are sent to the Glue42 Desktop clients. The Application Manager API exposes them as well, allowing custom UI's to interpret and use the values.",
+                    "description": "These name/value pairs are sent to the Glue42 Desktop clients. The Application Manager API exposes them as well, allowing custom UIs to interpret and use the values.",
                     "type": "object"
+                },
+                "noDelayedRestore": {
+                    "description": "If `true`, the application will always be restored directly when restoring workspaces (no delayed or lazy restore for this app).",
+                    "type": "boolean",
+                    "default": false
+                },
+                "intents": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/intent"
+                    }
+
                 }
             }
         },
@@ -161,35 +191,39 @@
             "additionalProperties": false,
             "properties": {
                 "url": {
-                    "description": "Initial URL loaded when a new HTML container host window is created.",
+                    "description": "Required. URL pointing to the location of the window application.",
                     "type": "string"
                 },
                 "name": {
-                    "description": "This is a required parameter for the HTML container host `CreateWindow()` call. Glue42 Desktop supports internal macros in the window `name`, in order to have different window names in different scenarios.",
+                    "description": "Name of the window",
+                    "type": "string"
+                },
+                "windowName": {
+                    "description": "Deprecated. Name of the window",
                     "type": "string"
                 },
                 "isSticky": {
-                    "description": "If `true`, the newly created window will participate in sticky window operations.",
+                    "description": "If `true`, the newly created window will participate in Glue42 window operations (stick, unstick, etc.).",
                     "type": "boolean",
                     "default": true
                 },
                 "left": {
-                    "description": "Coordinate on the horizontal axis, allows context macros expansion.",
+                    "description": "Position (in pixels) of the top-left window corner relative to the left edge of the display.",
                     "type": "integer",
                     "default": 0
                 },
                 "top": {
-                    "description": "Coordinate on the vertical axis, allows context macros expansion.",
+                    "description": "Position (in pixels) of the top-left window corner, relative to the top edge of the display.",
                     "type": "integer",
                     "default": 0
                 },
                 "width": {
-                    "description": "Width of the app window, allows context macros expansion.",
+                    "description": "Width of the app window.",
                     "type": "integer",
                     "default": 400
                 },
                 "height": {
-                    "description": "Height of the app window, allows context macros expansion.",
+                    "description": "Height of the app window.",
                     "type": "integer",
                     "default": 400
                 },
@@ -206,7 +240,7 @@
                 "allowCollapse": {
                     "description": "If `false`, the window will not contain a collapse button.",
                     "type": "boolean",
-                    "default": true
+                    "default": false
                 },
                 "allowForward": {
                     "description": "If `false`, the window will not contain an activity related forward button.",
@@ -224,7 +258,7 @@
                     "default": true
                 },
                 "allowUnstick": {
-                    "description": "If `false`, the window will not be able to be unstuck.",
+                    "description": "If `false`, the window will remain stuck to other windows.",
                     "type": "boolean",
                     "default": true
                 },
@@ -238,8 +272,18 @@
                     "type": "boolean",
                     "default": false
                 },
+                "maximizable": {
+                    "description": "If `false`, the window will not be able to maximize via buttons and/or windows gestures.",
+                    "type": "boolean",
+                    "default": true
+                },
+                "minimizable": {
+                    "description": "If `false`, the window will not be able to minimize via buttons and/or windows gestures.",
+                    "type": "boolean",
+                    "default": true
+                },
                 "autoSnap": {
-                    "description": "If `true`, when the move operation ends the window will snap to one of the approaching edges of another window (if any of the approaching edges are marked with red).",
+                    "description": "If `true`, when the move operation ends, the window will snap to one of the approaching edges of another window (if any of the approaching edges are marked with red).",
                     "type": "boolean",
                     "default": true
                 },
@@ -253,11 +297,11 @@
                     "type": "string"
                 },
                 "borderColor": {
-                    "description": "Can be a colour name, such as \"red\", or a hex-encoded RGB or ARGB value.",
+                    "description": "Can be a color name, such as \"red\", or a hex-encoded RGB or ARGB value.",
                     "type": "string"
                 },
                 "backgroundColor": {
-                    "description": "Background colour of the Electron window. Can be a 6 or a 3 digit hex value (#7FA or #1A2B30).",
+                    "description": "Background color of the Electron window. Can be a 6 or a 3 digit hex value (#7FA or #1A2B30).",
                     "type": "string",
                     "pattern": "^#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})$"
                 },
@@ -272,7 +316,6 @@
                     "default": true
                 },
                 "downloadSettings": {
-                    "default": {},
                     "$ref": "system.json#/definitions/downloadConfig"
                 },
                 "isCollapsed": {
@@ -281,7 +324,7 @@
                     "default": false
                 },
                 "isPopup": {
-                    "description": "If `true`, the window will open as a pop-up, sharing the lifetime and environment of the opener.",
+                    "description": "Deprecated. If `true`, the window will open as a pop-up, sharing the lifetime and environment of the opener.",
                     "type": "boolean",
                     "default": false
                 },
@@ -310,6 +353,11 @@
                     "type": "boolean",
                     "default": true
                 },
+                "injectionIntegration": {
+                    "description": "Whether to allow а web application hosted in Glue42 Desktop to be accessible by external scripts injected in the window.",
+                    "type": "boolean",
+                    "default": false
+                },
                 "maxHeight": {
                     "description": "Specify the maximum window height.",
                     "type": "number"
@@ -329,7 +377,7 @@
                     "default": 50
                 },
                 "mode": {
-                    "description": "HTML Container window type. Possible values are `flat`, `html`, `tab`.",
+                    "description": "Glue42 window type. Possible values are `flat`, `html`, `tab`.",
                     "enum": [
                         "flat",
                         "tab",
@@ -347,16 +395,21 @@
                     "type": "object"
                 },
                 "moveAreaThickness": {
-                    "description": "How much of the outer window area is to be considered as a sizing area (meaning you can move the window using it). The string value corresponds to the left, top, right and bottom borders.",
+                    "description": "How much of the outer window area is to be considered as a moving area (meaning you can move the window using it). The string value corresponds to the left, top, right and bottom borders.",
                     "type": "string",
                     "default": "0, 12, 0, 0",
                     "pattern": "^(?:[0-9 ]+,)*[0-9 ]+$"
                 },
                 "moveAreaTopMargin": {
-                    "description": "The HTML Container window can contain a move area thickness top margin. The margin is related to the top border of `moveAreaThickness` only. The string value corresponds to the left, top, right and bottom.",
+                    "description": "The Glue42 window can contain a move area thickness top margin. The margin is related to the top border of `moveAreaThickness` only. The string value corresponds to the left, top, right and bottom.",
                     "type": "string",
                     "default": "0, 0, 0, 0",
                     "pattern": "^(?:[0-9 ]+,)*[0-9 ]+$"
+                },
+                "moveAreaPassThroughMouseHover": {
+                    "description": "If `true`, mouse hover events which are over move area will be passed to the underlying Electron window.",
+                    "type": "boolean",
+                    "default": false
                 },
                 "onTop": {
                     "description": "If `true`, the window will appear on top of the Z-order.",
@@ -368,7 +421,7 @@
                     "type": "string"
                 },
                 "relativeDirection": {
-                    "description": "Direction (`bottom`, `top`, `left`, `right`) of positioning the window relatively to the `relativeTo` window. Considered only if `relativeTo` is supplied.",
+                    "description": "Direction (`bottom`, `top`, `left`, `right`) for positioning the window relatively to the `relativeTo` window. Considered only if `relativeTo` is supplied.",
                     "type": "string",
                     "default": "right"
                 },
@@ -388,13 +441,18 @@
                     "default": "5, 5, 5, 5",
                     "pattern": "^(?:[0-9 ]+,)*[0-9 ]+$"
                 },
+                "sizeAreaPassThroughMouseHover": {
+                    "description": "If `true`, mouse hover events which are over size area will be passed to the underlying Electron window.",
+                    "type": "boolean",
+                    "default": false
+                },
                 "snappingEdges": {
-                    "description": "Specifies the active Sticky Window snapping edges. Possible combinations are: `top`, `left`, `right`, `bottom`, `all` and any combination of them (e.g. `left, right`).",
+                    "description": "Specifies the active Glue42 window snapping edges. Possible combinations are: `top`, `left`, `right`, `bottom`, `all` and any combination of them (e.g. `left, right`).",
                     "type": "string",
                     "default": "all"
                 },
                 "startLocation": {
-                    "description": "Window startup location",
+                    "description": "Window startup location.",
                     "oneOf": [
                         {
                             "type": "string",
@@ -429,6 +487,10 @@
                                         "rightFull"
                                     ]
                                 },
+                                "stuck": {
+                                    "description": "Identifies whether an application has to be stuck to particular location",
+                                    "type": "boolean"
+                                },
                                 "display": {
                                     "description": "The identifying number of the monitor (e.g., 1, 2, 3 or \"main\")",
                                     "type": "string"
@@ -439,7 +501,7 @@
                     ]
                 },
                 "frameColor": {
-                    "description": "Specifies the sticky frame color. Accepts hex color as a string (e.g., `#666666`) or named HTML colors (e.g., `red`)",
+                    "description": "Specifies the Glue42 window frame color. Accepts hex color as a string (e.g., `#666666`) or named HTML colors (e.g., `red`)",
                     "type": "string"
                 },
                 "stickyFrameColor": {
@@ -448,12 +510,12 @@
                     "default": "#5b8dc9"
                 },
                 "stickyGroup": {
-                    "description": "If set, the sticky window can only stick to windows that belong to the same group.",
+                    "description": "If set, the Glue42 window can only stick to windows that belong to the same group.",
                     "type": "string",
                     "default": "Any"
                 },
                 "tabGroupId": {
-                    "description": "Specifies the tab group ID. If two or more tab windows are defined with same ID, they will be hosted in the same tab window.",
+                    "description": "Specifies the tab group ID. If two or more tab windows are defined with the same ID, they will be hosted in the same tab window.",
                     "type": "string"
                 },
                 "tabIndex": {
@@ -461,7 +523,7 @@
                     "type": "number"
                 },
                 "tabSelected": {
-                    "description": "Tab selected.",
+                    "description": "Whether the application tab to be on focus when the app is opened as a tab window in a tab group.",
                     "type": "boolean",
                     "default": true
                 },
@@ -485,6 +547,10 @@
                     "type": "string",
                     "default": ""
                 },
+                "hideGroupHeader": {
+                    "description": "Hides the group header when a window joins this windows group",
+                    "type": "boolean"
+                },
                 "title": {
                     "description": "Sets the window title. To work properly, there should be a title HTML tag in the page.",
                     "type": "string"
@@ -501,7 +567,7 @@
                             "default": true
                         },
                         "type": {
-                            "description": "The loader animation type. Check \"Loader Animations\" for possible options.",
+                            "description": "The loader animation type. Check the \"Loader Animations\" for possible options.",
                             "type": "string",
                             "default": "DoubleBounce"
                         },
@@ -557,25 +623,59 @@
                     "type": "string",
                     "default": "normal"
                 },
-                "injectGlue": {
-                    "description": "This is `true`/`false` or an object that will be used to initiate Glue42.",
+                "autoInjectAPI": {
+                    "description": "Specifies if the Glue42 JavaScript API will be auto injected in the window context. The `Glue()` factory function becomes available without referencing a `desktop.js` file.",
                     "type": "object",
                     "required": [
-                        "version"
+                        "enabled"
                     ],
                     "additionalProperties": false,
                     "properties": {
-                        "version": {
-                            "type": "string",
-                            "description": "Can be a version string."
+                        "enabled": {
+                            "description": "If `true`, will enable auto injection of the Glue42 JavaScript library.",
+                            "type": "boolean",
+                            "default": false
                         },
                         "autoInit": {
                             "default": false,
+                            "description": "If set, will auto initialize the injected Glue42 JavaScript library.",
                             "oneOf": [
                                 {
+                                    "description": "Whether to enable auto initialization of the Glue42 JavaScript library.",
                                     "type": "boolean"
                                 },
                                 {
+                                    "description": "Initialization options you can specify if you want to auto initialize the injected Glue42 JavaScript library.",
+                                    "type": "object",
+                                    "additionalProperties": true
+                                }
+                            ]
+                        }
+                    }
+                },
+                "autoInjectFdc3": {
+                    "description": "Specifies if the glue-fdc3 JavaScript API will be auto injected in the window context. The api becomes available without referencing any JS file.",
+                    "type": "object",
+                    "required": [
+                        "enabled"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                        "enabled": {
+                            "description": "If `true`, will enable auto injection of the glue-fdc3 JavaScript library.",
+                            "type": "boolean",
+                            "default": false
+                        },
+                        "autoInit": {
+                            "default": false,
+                            "description": "Reserved.",
+                            "oneOf": [
+                                {
+                                    "description": "Whether to enable auto initialization of the glue-fdc3 JavaScript library.",
+                                    "type": "boolean"
+                                },
+                                {
+                                    "description": "Initialization options you can specify if you want to auto initialize the injected glue-fdc3 JavaScript library.",
                                     "type": "object",
                                     "additionalProperties": true
                                 }
@@ -584,24 +684,20 @@
                     }
                 },
                 "context": {
-                    "description": "Custom object associated with the window.",
+                    "description": "Custom context object associated with the window.",
                     "type": "object"
                 },
                 "autoOpenDevTools": {
-                    "description": "If set, dev tools will start automatically.",
+                    "description": "If set, DevTools will start automatically.",
                     "type": "boolean",
                     "default": false
                 },
                 "processAffinity": {
-                    "description": "Controls process reuse.",
-                    "default": true,
                     "oneOf": [
                         {
-                            "description": "Whether process reuse is enabled for that window.",
-                            "type": "boolean"
+                            "$ref": "#/definitions/applicationProcessAffinity"
                         },
                         {
-                            "description": "Process affinity tag (windows with the same tag will be merged together).",
                             "type": "string"
                         }
                     ]
@@ -612,7 +708,7 @@
                     "default": false
                 },
                 "registerHtmlContainer": {
-                    "description": "Whether to inject the `htmlContainer` object. It will be used for legacy applications.",
+                    "description": "Whether to inject the `htmlContainer` object. This is used for legacy applications.",
                     "type": "boolean",
                     "default": false
                 },
@@ -634,6 +730,69 @@
                 },
                 "security": {
                     "$ref": "system.json#/definitions/securityConfig"
+                },
+                "refreshHandlers": {
+                    "description": "Configuration for the refresh handlers.",
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "description": "If `true`, will enable refresh handlers.",
+                            "type": "boolean"
+                        },
+                        "timeout": {
+                            "description": "The maximum amount of time (ms) that a refresh handler will have to complete its operation.",
+                            "type": "number"
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "closeHandlers": {
+                    "description": "Configuration for close handlers.",
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "description": "If `true`, will enable close handlers.",
+                            "type": "boolean"
+                        },
+                        "timeout": {
+                            "description": "The maximum amount of time (ms) that a close handler will have to complete its operation.",
+                            "type": "number"
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "injectSIDtoContext": {
+                    "description": "Whether to inject the SID in the window context after successful SSO authentication.",
+                    "type": "boolean",
+                    "default": false
+                },
+                "zoom": {
+                    "$ref": "system.json#/definitions/zoomConfig"
+                },
+                "visibleAreas": {
+                    "description": "Which parts of the opened window to be visible. The window itself will not be resized. The parts of the window outside the specified areas will remain intact but will be invisible.",
+                    "type": "array",
+                    "items": {
+                        "properties": {
+                            "left": {
+                                "description": "Coordinate on the horizontal axis.",
+                                "type": "integer"
+                            },
+                            "top": {
+                                "description": "Coordinate on the vertical axis.",
+                                "type": "integer"
+                            },
+                            "width": {
+                                "description": "Width of the app window.",
+                                "type": "integer"
+                            },
+                            "height": {
+                                "description": "Height of the app window.",
+                                "type": "integer"
+                            }
+                        },
+                        "additionalProperties": false
+                    }
                 }
             },
             "required": [
@@ -670,7 +829,7 @@
                     "type": "boolean"
                 },
                 "autoSaveContext": {
-                    "description": "Activity context can be saved as part of a saved layout. The activity owner window (the JavaScript code) can register a callback to describe the members of the context that should be saved. If no handler is registered, then by default no activity context will be saved. By using this option and setting its value to `true`, the user has an option to save activity context for legacy applications (i.e. these that haven't registered such callbacks).",
+                    "description": "Activity context can be saved as part of a saved layout. The activity owner window can register a callback to describe the members of the context that should be saved. If no handler is registered, then by default no activity context will be saved. By using this option and setting its value to `true`, the user has an option to save activity context for legacy applications (i.e., these that haven't registered such callbacks).",
                     "type": "boolean"
                 },
                 "saveOwnerOnly": {
@@ -679,11 +838,11 @@
                     "default": true
                 },
                 "includeTypesToLayout": {
-                    "description": "Comma separated list of window types which should be included in the activity application auto-saved layout.",
+                    "description": "Comma separated list of window types which should be included in the activity application auto saved layout.",
                     "type": "string"
                 },
                 "ignoreTypesFromLayout": {
-                    "description": "Comma separated list of window types which should be excluded from the activity application auto-saved layout. Note that `ignoreTypesFromLayout` has priority, i.e. if a window type is defined in both lists, it will be excluded. Also, if `includeTypesToLayout` is specified but not `ignoreTypesFromLayout`, then the types in the `includeTypesToLayout` list will be included in the layout and the rest will be excluded and vice versa.",
+                    "description": "Comma separated list of window types which should be excluded from the activity application auto saved layout. Note that `ignoreTypesFromLayout` has priority, i.e. if a window type is defined in both lists, it will be excluded. Also, if `includeTypesToLayout` is specified but not `ignoreTypesFromLayout`, then the types in the `includeTypesToLayout` list will be included in the layout and the rest will be excluded and vice versa.",
                     "type": "string"
                 }
             },
@@ -736,7 +895,8 @@
                         "Process",
                         "Environment",
                         "Monitor",
-                        "AGM"
+                        "AGM",
+                        "Window"
                     ],
                     "default": "Process"
                 },
@@ -755,22 +915,22 @@
                     "default": "--token"
                 },
                 "left": {
-                    "description": "Coordinate on the horizontal axis, allows context macros expansion.",
+                    "description": "Position (in pixels) of the left window border, relative to the left edge of the display.",
                     "type": "integer",
                     "default": 0
                 },
                 "top": {
-                    "description": "Coordinate on the vertical axis, allows context macros expansion.",
+                    "description": "Position (in pixels) of the top window border, relative to the top edge of the display.",
                     "type": "integer",
                     "default": 0
                 },
                 "width": {
-                    "description": "Width of the app window, allows context macros expansion.",
+                    "description": "Width of the app window.",
                     "type": "integer",
                     "default": 400
                 },
                 "height": {
-                    "description": "Height of the app window, allows context macros expansion.",
+                    "description": "Height of the app window.",
                     "type": "integer",
                     "default": 400
                 },
@@ -779,7 +939,7 @@
                     "type": "string"
                 },
                 "mode": {
-                    "description": "HTML Container window type. Possible values are `flat`, `html`, `tab`.",
+                    "description": "Glue42 window type. Possible values are `flat`, `html`, `tab`.",
                     "enum": [
                         "flat",
                         "tab",
@@ -821,6 +981,85 @@
                 "startFailedMessage": {
                     "description": "Error message that should be displayed to users if the `exe` fails to start.",
                     "type": "string"
+                },
+                "startingContextMode": {
+                    "description": "Specifies how to pass application starting context to the client application.",
+                    "enum": [
+                        "environment",
+                        "interop"
+                    ],
+                    "default": "environment"
+                }
+            }
+        },
+        "clickonce": {
+            "title": "ClickOnceConfig",
+            "type": "object",
+            "description": "ClickOnce applications",
+            "properties": {
+                "url": {
+                    "description": "URL to web server address associated with directory, which contains the ClickOnce application.",
+                    "type": "string"
+                },
+                "windowStyle": {
+                    "description": "Specifies the target's main window style (if supported).",
+                    "enum": [
+                        "Normal",
+                        "Hidden",
+                        "Minimized",
+                        "Maximized"
+                    ],
+                    "default": "Normal"
+                },
+                "left": {
+                    "description": "Position (in pixels) of the left window border, relative to the left edge of the display.",
+                    "type": "integer",
+                    "default": 0
+                },
+                "top": {
+                    "description": "Position (in pixels) of the top window border, relative to the top edge of the display.",
+                    "type": "integer",
+                    "default": 0
+                },
+                "width": {
+                    "description": "Width of the app window.",
+                    "type": "integer",
+                    "default": 400
+                },
+                "height": {
+                    "description": "Height of the app window.",
+                    "type": "integer",
+                    "default": 400
+                },
+                "mode": {
+                    "description": "Glue42 window type. Possible values are `flat`, `html`, `tab`.",
+                    "enum": [
+                        "flat",
+                        "tab",
+                        "html"
+                    ],
+                    "type": "string",
+                    "default": "flat"
+                },
+                "startFailedMessage": {
+                    "description": "Error message that should be displayed to users if the `clickonce` fails to start.",
+                    "type": "string"
+                },
+                "timeout": {
+                    "description": "Starting timeout.",
+                    "type": "number"
+                },
+                "trackingType": {
+                    "description": "Specifies how to track the lifetime of the target application process , i.e. to determine when it is started and stopped.",
+                    "enum": [
+                        "None",
+                        "Process",
+                        "Environment",
+                        "Monitor",
+                        "AGM",
+                        "Window"
+                    ],
+                    "default": "Window"
                 }
             }
         },
@@ -831,7 +1070,7 @@
             "additionalProperties": false,
             "properties": {
                 "showConsole": {
-                    "description": "If `true`, the console of the Node.js script will be visible,",
+                    "description": "If `true`, the console of the Node.js script will be visible.",
                     "type": "boolean",
                     "default": false
                 },
@@ -898,6 +1137,90 @@
                 }
             }
         },
+        "childWindow": {
+            "title": "ChildWindowConfig",
+            "type": "object",
+            "description": "Child-window application",
+            "additionalProperties": false,
+            "properties": {
+                "owner": {
+                    "description": "The host application name",
+                    "type": "string"
+                },
+                "windowStyle": {
+                    "description": "Specifies the target's main window style (if supported).",
+                    "enum": [
+                        "Normal",
+                        "Hidden",
+                        "Minimized",
+                        "Maximized"
+                    ],
+                    "default": "Normal"
+                },
+                "left": {
+                    "description": "Position (in pixels) of the left window border, relative to the left edge of the display.",
+                    "type": "integer",
+                    "default": 0
+                },
+                "top": {
+                    "description": "Position (in pixels) of the top window border, relative to the top edge of the display.",
+                    "type": "integer",
+                    "default": 0
+                },
+                "width": {
+                    "description": "Width of the app window.",
+                    "type": "integer",
+                    "default": 400
+                },
+                "height": {
+                    "description": "Height of the app window.",
+                    "type": "integer",
+                    "default": 400
+                },
+                "tabGroupId": {
+                    "description": "Specifies the tab group ID. If two or more tab windows are defined with same ID, they will be hosted in the same tab window.",
+                    "type": "string"
+                },
+                "mode": {
+                    "description": "Glue42 window type. Possible values are `flat`, `html`, `tab`.",
+                    "enum": [
+                        "flat",
+                        "tab",
+                        "html"
+                    ],
+                    "type": "string",
+                    "default": "flat"
+                },
+                "tabIndex": {
+                    "description": "Specifies the tab position index. Tab windows in the same tab group are ordered by their position index. Use negative index to make the tab active.",
+                    "type": "number"
+                },
+                "relativeTo": {
+                    "description": "The window ID of the window that will be used to relatively position the new window. Can be combined with `relativeDirection`",
+                    "type": "string"
+                },
+                "relativeDirection": {
+                    "description": "Direction (`bottom`, `top`, `left`, `right`) of positioning the window relatively to the `relativeTo` window. Considered only if `relativeTo` is supplied.",
+                    "type": "string",
+                    "default": "right"
+                },
+                "allowChannels": {
+                    "description": "If `false`, the window will not show the channel selector.",
+                    "type": "boolean",
+                    "default": false
+                },
+                "channelId": {
+                    "description": "ID of the channel.",
+                    "type": "string"
+                },
+                "canvasPlacement": {
+                    "$ref": "#/definitions/canvasPlacement"
+                }
+            },
+            "required": [
+                "owner"
+            ]
+        },
         "activityWindow": {
             "title": "activityWindow",
             "type": "object",
@@ -913,11 +1236,11 @@
                     "type": "string"
                 },
                 "left": {
-                    "description": "Coordinate on the horizontal axis.",
+                    "description": "Position (in pixels) of the left window border, relative to the left edge of the display.",
                     "type": "integer"
                 },
                 "top": {
-                    "description": "Coordinate on the vertical axis.",
+                    "description": "Position (in pixels) of the top window border, relative to the top edge of the display.",
                     "type": "integer"
                 },
                 "width": {
@@ -947,6 +1270,7 @@
             "additionalProperties": false,
             "properties": {
                 "mode": {
+                    "description": "Whether the activity window dimensions are in absolute (pixels) or relative (percents) tp the screen.",
                     "enum": [
                         "pixels",
                         "percents"
@@ -954,13 +1278,16 @@
                     "default": "pixels"
                 },
                 "cellSize": {
+                    "description": "Size modifier for each activity cell in the activity grid.",
                     "type": "integer",
                     "default": 1
                 },
                 "cellWidth": {
+                    "description": "Size modifier for the width of each activity cell in the activity grid.",
                     "type": "integer"
                 },
                 "cellHeight": {
+                    "description": "Size modifier for the height of each activity cell in the activity grid.",
                     "type": "integer"
                 },
                 "screen": {
@@ -989,7 +1316,7 @@
                     "type": "string"
                 },
                 "isIndependent": {
-                    "description": "Whether this activity window type can act as an independent window, i.e. to belong to any activity.",
+                    "description": "Deprecated. Whether this activity window type can act as an independent window, i.e. to belong to any activity.",
                     "type": "boolean",
                     "default": false
                 }
@@ -1028,6 +1355,17 @@
                 "workspaceContext": {
                     "type": "object"
                 },
+                "restoreOptions": {
+                    "type": "object"
+                },
+                "restoreType": {
+                    "type": "string",
+                    "enum": [
+                        "direct",
+                        "delayed",
+                        "lazy"
+                    ]
+                },
                 "autoStartLauncherApp": {
                     "type": "boolean",
                     "default": true
@@ -1048,28 +1386,50 @@
                 "bounds": {
                     "type": "object",
                     "additionalProperties": false,
+                    "default": {},
                     "properties": {
                         "left": {
-                            "description": "Coordinate on the horizontal axis.",
-                            "type": "integer"
+                            "description": "Position (in pixels) of the left window border, relative to the left edge of the display.",
+                            "type": "integer",
+                            "default": 0
                         },
                         "top": {
-                            "description": "Coordinate on the vertical axis.",
-                            "type": "integer"
+                            "description": "Position (in pixels) of the top window border, relative to the top edge of the display.",
+                            "type": "integer",
+                            "default": 0
                         },
                         "width": {
                             "description": "Width of the app window.",
-                            "type": "integer"
+                            "type": "integer",
+                            "default": 600
                         },
                         "height": {
                             "description": "Height of the app window.",
-                            "type": "integer"
+                            "type": "integer",
+                            "default": 600
                         }
                     }
                 },
                 "windowState": {
                     "description": "If set, the window will start in the specified state (maximized, minimized, normal)",
+                    "type": "string",
+                    "default": "maximized"
+                },
+                "screenRatio": {
+                    "type": "number"
+                },
+                "frameStartLocation": {
                     "type": "string"
+                },
+                "lockdown": {
+                    "type": "boolean"
+                },
+                "activateFrame": {
+                    "type": "boolean"
+                },
+                "hidden": {
+                    "type": "boolean",
+                    "default": false
                 }
             },
             "required": [
@@ -1096,7 +1456,7 @@
                 },
                 "showFrame": {
                     "type": "boolean"
-                },               
+                },
                 "tabGroup": {
                     "type": "string"
                 },
@@ -1141,6 +1501,9 @@
                 },
                 "disableTileMode": {
                     "type": "boolean"
+                },
+                "tabPinned": {
+                    "type": "boolean"
                 }
             },
             "required": [
@@ -1174,6 +1537,15 @@
                     "type": "boolean"
                 },
                 "showBorder": {
+                    "type": "boolean"
+                },
+                "tabAllowRearrange": {
+                    "type": "boolean"
+                },
+                "showAddButton": {
+                    "type": "boolean"
+                },
+                "showTabCloseButton": {
                     "type": "boolean"
                 },
                 "tabGroup": {
@@ -1233,6 +1605,12 @@
                 "channelId": {
                     "type": "string"
                 },
+                "hostInstanceId": {
+                    "type": "string"
+                },
+                "instanceId": {
+                    "type": "string"
+                },
                 "context": {
                     "type": "object"
                 },
@@ -1253,9 +1631,67 @@
                 },
                 "laneAllowResize": {
                     "type": "boolean"
+                },
+                "lockdown": {
+                    "type": "boolean"
+                },
+                "tabPinned": {
+                    "type": "boolean"
+                },
+                "restoreType": {
+                    "type": "string"
+                },
+                "createArgs": {
+                    "type": "object"
                 }
             },
             "additionalProperties": false
+        },
+        "applicationProcessAffinity": {
+            "type": "object",
+            "description": "Defines configuration for application process affinity config",
+            "additionalProperties": false,
+            "properties": {
+                "affinity": {
+                    "description": "Set this to override the default grouping logic configured in system.json. If set will group the app only with apps with the same affinity.",
+                    "type": "string"
+                },
+                "dedicatedProcess": {
+                    "description": "If true will keep the app in separate process.",
+                    "type": "boolean",
+                    "default": false
+                }
+            }
+        },
+        "intent": {
+            "title": "Intent",
+            "type": "object",
+            "description": "Intent definition",
+            "additionalProperties": false,
+            "required": [
+                "name",
+                "contexts"
+            ],
+            "properties": {
+                "name": {
+                    "description": "Name of the intent",
+                    "type": "string"
+                },
+                "displayName": {
+                    "description": "Display name used to visualize the intent",
+                    "type": "string"
+                },
+                "contexts": {
+                    "description": "If `true`, the console of the Node.js script will be visible",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "customConfig": {
+                    "type": "object"
+                }
+            }
         }
     }
 }

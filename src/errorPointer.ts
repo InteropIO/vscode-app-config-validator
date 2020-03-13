@@ -16,7 +16,7 @@ class ErrorPointer {
     private readonly settings: parse.Options = { loc: true };
 
     public point(errorPath: string, json: string): vscode.Range {
-        json = jsonFixer(json).data;
+        json = jsonFixer(json, { parse: false }).data;
         if (!Array.isArray(JSON.parse(json))) {
             json = "[" + json + "]";
         }

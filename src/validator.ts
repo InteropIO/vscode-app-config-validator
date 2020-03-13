@@ -22,6 +22,7 @@ class ConfigurationValidator {
     constructor() {
         this.ajvVal = new ajv({ useDefaults: true, meta: true, jsonPointers: true });
         this.ajvVal.addMetaSchema(require('ajv/lib/refs/json-schema-draft-06.json'));
+        require("ajv-keywords")(this.ajvVal, ["transform"]);
     }
 
     public init() {
@@ -38,7 +39,22 @@ class ConfigurationValidator {
         const types: string[] = appSchemaClone.definitions.application.properties.type.enum;
         types.forEach((appType) => {
             const typedSchema = JSON.parse(glueAppSchema) as { [key: string]: any };
-            typedSchema.definitions.application.properties.details = typedSchema.definitions[appType];
+            const details = typedSchema.definitions[appType];
+            if (appType === "exe") {
+                details.properties.mode.transform = ["toEnumCase"];
+                details.properties.windowStyle.transform = ["toEnumCase"];
+                details.properties.trackingType.transform = ["toEnumCase"];
+                details.properties.startingContextMode.transform = ["toEnumCase"];
+            } else if (appType === "window") {
+                details.properties.mode.transform = ["toEnumCase"];
+                details.properties.startLocation.oneOf[0].transform = ["toEnumCase"];
+                details.properties.startLocation.oneOf[1].properties.location.transform = ["toEnumCase"];
+            } else if (appType === "clickonce") {
+                details.properties.mode.transform = ["toEnumCase"];
+                details.properties.windowStyle.transform = ["toEnumCase"];
+                details.properties.trackingType.transform = ["toEnumCase"];
+            }
+            typedSchema.definitions.application.properties.details = details;
             typedSchema.$id = `http://glue42.com/gd/application-${appType}.json`;
             this.ajvVal.addSchema(typedSchema, `application-${appType}.json`);
         });
@@ -102,7 +118,7 @@ class ConfigurationValidator {
     private modifyDataPathPosition(error: ValidationSummary, allValidationResults: Array<ValidationSummary>) {
         const realIndex = allValidationResults.indexOf(error);
         if (error.error.dataPath) {
-            error.error.dataPath = "/" +realIndex + error.error.dataPath.substring(2);
+            error.error.dataPath = "/" + realIndex + error.error.dataPath.substring(2);
         }
     }
 }
