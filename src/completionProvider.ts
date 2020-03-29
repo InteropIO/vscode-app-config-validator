@@ -24,13 +24,23 @@ import assetProvider from "./assetProvider";
 import * as jsonFix from "json-fixer";
 import { JSONSchema6 } from "json-schema";
 import { get } from "lodash";
+import { Validator } from "./validator/types";
 
 export class CompletionProvider implements CompletionItemProvider {
+    private readonly _validator: Validator;
+
+    constructor(validator: Validator) {
+        this._validator = validator;
+    }
 
     public provideCompletionItems = async (document: TextDocument, position: Position, token: CancellationToken, context: CompletionContext): Promise<CompletionItem[] | CompletionList> => {
         position = new Position((position.line + 1), position.character);
 
-        const strictJsonString = jsonFix(document.getText()).data;
+        if (this._validator.isThemeConfig(document.getText())) {
+            return this.provideThemeCompletionsItems(document, position, token, context);
+        }
+
+        const strictJsonString = jsonFix(document.getText(), { parse: false }).data;
         const jsonTree = parse(strictJsonString, { loc: true });
         const configType: string = this.getConfigType(strictJsonString, position, jsonTree);
 
@@ -76,6 +86,49 @@ export class CompletionProvider implements CompletionItemProvider {
         return completionItems;
     }
 
+    public provideThemeCompletionsItems = async (document: TextDocument, position: Position, token: CancellationToken, context: CompletionContext): Promise<CompletionItem[] | CompletionList> => {
+        const strictJsonString = jsonFix(document.getText(), { parse: false }).data;
+        const jsonTree = parse(strictJsonString, { loc: true });
+        const parsedSchema = await dereference(await bundle(join(__dirname, assetProvider.themesSchemaLocation)));
+        const currSchema = parsedSchema as any;
+        const propertyPath = this.getPropertyPath(position, jsonTree).trim().split("\\");
+
+        const schemaFriendlyPropertyPath = propertyPath.reduce((acc, pathSegment, i) => {
+            if (i % 2 === 1 && i < propertyPath.length - 1) {
+                acc.push("properties");
+            }
+
+            if (!pathSegment) {
+                return acc;
+            }
+
+            return [...acc, pathSegment];
+        }, [] as string[]);
+
+        let completionItems = [] as CompletionItem[];
+
+        let currProp = get(currSchema.items.properties, schemaFriendlyPropertyPath.join("."), currSchema);
+
+        while (!currProp.properties && schemaFriendlyPropertyPath.length > 0) {
+            schemaFriendlyPropertyPath.pop();
+            currProp = get(currSchema.properties, schemaFriendlyPropertyPath.join("."), currSchema);
+        }
+
+        if (currProp && currProp.properties) {
+            completionItems = Object.keys(currProp.properties).map(prop => {
+                const completionItem = new CompletionItem('"' + prop + '"', CompletionItemKind.Property);
+                const { description } = currProp.properties[prop];
+
+                completionItem.documentation = description;
+                completionItem.detail = this.resolveCompletionItemDetail(currProp.properties[prop]);
+
+                return completionItem;
+            });
+        }
+
+        return completionItems;
+    }
+
     private getConfigType(text: string, position: Position, jsonTree: parse.ASTNode) {
         const configAsJson = JSON.parse(text);
         if (!Array.isArray(configAsJson)) {
@@ -91,19 +144,22 @@ export class CompletionProvider implements CompletionItemProvider {
         if (jsonTree.type === "Array") {
             const child = (jsonTree as parse.ArrayNode).children.find(n => this.isPositionInNode(n, position));
 
-            return child ? this.getPropertyPath(position, child) : "";
+            const result = child ? this.getPropertyPath(position, child) : "";
+            return result;
         } else if (jsonTree.type === "Object") {
             const child = (jsonTree as parse.ObjectNode).children.find(n => this.isPositionInNode(n, position));
 
-            return child ? this.getPropertyPath(position, child) : "";
+            const result = child ? this.getPropertyPath(position, child) : "";
+            return result;
         } else if (jsonTree.type === "Property") {
             const propertyNode = jsonTree as parse.PropertyNode;
 
             if (propertyNode.value.type === "Literal") {
                 return propertyNode.key.value;
             }
-
-            return propertyNode.key.value + "\\" + this.getPropertyPath(position, propertyNode.value);
+            const result = propertyNode.key.value + "\\" + this.getPropertyPath(position, propertyNode.value);
+            console.log(result);
+            return result;
         }
 
         throw new Error("Unexpected node type " + jsonTree.type);

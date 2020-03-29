@@ -1,0 +1,1299 @@
+{
+    "type": "array",
+    "items": {
+        "title": "StickyWindows themes configuration",
+        "description": "Schema describing the sticky windows themes in Glue42 Desktop",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+            "name": {
+                "description": "The name of the theme",
+                "type": "string"
+            },
+            "displayName": {
+                "description": "The user friendly name of the theme which will be displayed",
+                "type": "string"
+            },
+            "properties": {
+                "title": "StickyWindows theme properties configuration",
+                "description": "Schema describing the themes in Sticky Windows",
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "titleHeight": {
+                        "description": "The height of the window header when the window is extracted from a workspace.",
+                        "type": "number",
+                        "default": 25.0
+                    },
+                    "titleFontWeight": {
+                        "description": "The font weight of the window title",
+                        "type": "string",
+                        "enum": [
+                            "Unspecified",
+                            "Thin",
+                            "ExtraLight",
+                            "UltraLight",
+                            "Light",
+                            "Regular",
+                            "Normal",
+                            "Medium",
+                            "SemiBold",
+                            "DemiBold",
+                            "Bold",
+                            "ExtraBold",
+                            "UltraBold",
+                            "Black",
+                            "Heavy",
+                            "ExtraBlack",
+                            "UltraBlack"
+                        ],
+                        "default": "Normal"
+                    },
+                    "focusTitleFontWeight": {
+                        "description": "The font weight of a focused window title",
+                        "type": "string",
+                        "enum": [
+                            "Unspecified",
+                            "Thin",
+                            "ExtraLight",
+                            "UltraLight",
+                            "Light",
+                            "Regular",
+                            "Normal",
+                            "Medium",
+                            "SemiBold",
+                            "DemiBold",
+                            "Bold",
+                            "ExtraBold",
+                            "UltraBold",
+                            "Black",
+                            "Heavy",
+                            "ExtraBlack",
+                            "UltraBlack"
+                        ],
+                        "default": "Normal"
+                    },
+                    "titleFontSize": {
+                        "description": "The font size of a window title",
+                        "type": "number",
+                        "default": -1.0
+                    },
+                    "titleSeparatorColor": {
+                        "description": "Color of the title separator.",
+                        "type": "string",
+                        "default": "#000000"
+                    },
+                    "titleSeparatorHeight": {
+                        "description": "Height (in px) of the title separator.",
+                        "type": "integer",
+                        "default": 0
+                    },
+                    "frameThickness": {
+                        "description": "Thickness of the frame of a window group.",
+                        "type": "integer",
+                        "default": 8
+                    },
+                    "singleFrameThickness": {
+                        "description": "Single window frame thickness.",
+                        "type": "integer",
+                        "default": 4
+                    },
+                    "singleFrameVisible": {
+                        "description": "Specifies whether the single window frame is visible.",
+                        "type": "boolean",
+                        "default": true
+                    },
+                    "frameColor": {
+                        "description": "Single window and window group frame color.",
+                        "type": "string",
+                        "default": "#FF000096"
+                    },
+                    "borderSize": {
+                        "description": "The border size of flat and tab windows.",
+                        "type": "number",
+                        "default": 4.0
+                    },
+                    "focusFrameColor": {
+                        "description": "Color of the focus frame.",
+                        "type": "string",
+                        "default": "#000000"
+                    },
+                    "focusFrameSize": {
+                        "description": "Size of the focus frame.",
+                        "type": "number",
+                        "default": 0.0
+                    },
+                    "borderColor": {
+                        "description": "The border color of flat and tab windows",
+                        "type": "string",
+                        "default": "#FF2A2A2A"
+                    },
+                    "draggingColor": {
+                        "description": "Dragged window frame color.",
+                        "type": "string",
+                        "default": "#FF00FFFF"
+                    },
+                    "approachingEdgeColor": {
+                        "description": "Approaching edges (magnetic fields) color.",
+                        "type": "string",
+                        "default": "#FFFF0000"
+                    },
+                    "textColor": {
+                        "description": "Text components color (group caption, etc.).",
+                        "type": "string",
+                        "default": "#FFFFFFFF"
+                    },
+                    "opacityNormal": {
+                        "description": "Group border normal opacity.",
+                        "type": "number",
+                        "default": 0.5
+                    },
+                    "opacityClicked": {
+                        "description": "Group border opacity when it is clicked on.",
+                        "type": "number",
+                        "default": 0.8
+                    },
+                    "animatedBorders": {
+                        "description": "If `true`, the approaching edges and the borders of dragged single windows will be animated.",
+                        "type": "boolean",
+                        "default": false
+                    },
+                    "foregroundColor": {
+                        "description": "The default foreground color of all Glue42 window elements.",
+                        "type": "string",
+                        "default": "#999999"
+                    },
+                    "backgroundColor": {
+                        "description": "The default background color of all Glue42 Window elements (e.g., loading animation background, etc.)",
+                        "type": "string",
+                        "default": "#FF000000"
+                    },
+                    "dropShadowIntensity": {
+                        "description": "Drop shadow intensity percantage.",
+                        "type": "integer",
+                        "default": 50
+                    },
+                    "dropShadowBorderColor": {
+                        "description": "Drop shadow border color.",
+                        "type": "string",
+                        "default": "#4C4C4C"
+                    },
+                    "loadingAnimation": {
+                        "description": "Specifies an external XAML file containing a user-defined loading animation.",
+                        "type": "string"
+                    },
+                    "tabs": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                            "headerColor": {
+                                "description": "Changes the color of the background behind the tabs in a tab group.",
+                                "type": "string",
+                                "default": "#FF1C2D3B"
+                            },
+                            "tabColor": {
+                                "description": "Changes the color of a tab that is not active or hovered over.",
+                                "type": "string",
+                                "default": "#FF1A2834"
+                            },
+                            "tabTextColor": {
+                                "description": "Changes the color of the text in a tab when the tab is not active or hovered over.",
+                                "type": "string",
+                                "default": "#FF667D94"
+                            },
+                            "activeTabColor": {
+                                "description": "Changes the color of the active tab in a tab group.",
+                                "type": "string",
+                                "default": "#FF223545"
+                            },
+                            "activeTabTextColor": {
+                                "description": "Changes the text color of the active tab in a tab group.",
+                                "type": "string",
+                                "default": "#FFC8DCE8"
+                            },
+                            "activeTabBorderColor": {
+                                "description": "Changes the border color of an active tab. Defaults to the inactive tab border color",
+                                "type": "string"
+                            },
+                            "activeTabBorderSize": {
+                                "description": "Changes the border size of an active tab. Defaults to the inactive tab border size",
+                                "type": "integer",
+                                "default": -1
+                            },
+                            "activeTabCaptionScale": {
+                                "description": "Changes the caption scale of an active tab. Defaults to the inactive tab caption scale",
+                                "type": "number",
+                                "default": -1.0
+                            },
+                            "activeTabTextSize": {
+                                "description": "Changes the size of the text of the active tab. Defaults to the active tab caption scale",
+                                "type": "integer",
+                                "default": -1
+                            },
+                            "activeTabTextFontWeight": {
+                                "description": "Changes the text font weight of an active tab. Defaults to the inactive tab text font weight",
+                                "type": "string",
+                                "enum": [
+                                    "Unspecified",
+                                    "Thin",
+                                    "ExtraLight",
+                                    "UltraLight",
+                                    "Light",
+                                    "Regular",
+                                    "Normal",
+                                    "Medium",
+                                    "SemiBold",
+                                    "DemiBold",
+                                    "Bold",
+                                    "ExtraBold",
+                                    "UltraBold",
+                                    "Black",
+                                    "Heavy",
+                                    "ExtraBlack",
+                                    "UltraBlack"
+                                ],
+                                "default": "Unspecified"
+                            },
+                            "hoverTabColor": {
+                                "description": "Changes the color of the tab when it is hovered over and is not active.",
+                                "type": "string",
+                                "default": "#FF446989"
+                            },
+                            "hoverTabTextColor": {
+                                "description": "Changes the text color of a tab when it is hovered over and is not active.",
+                                "type": "string",
+                                "default": "#FFF7F8FA"
+                            },
+                            "tabBorderColor": {
+                                "description": "Changes the color of the tab border regardless of the tab state.",
+                                "type": "string",
+                                "default": "#FF73C1FF"
+                            },
+                            "tabSeparatorColor": {
+                                "type": "string",
+                                "default": "#000000"
+                            },
+                            "tabSeparatorHeight": {
+                                "type": "integer",
+                                "default": 0
+                            },
+                            "headerHeight": {
+                                "description": "Defines the height of the tab header.",
+                                "type": "integer",
+                                "default": 20
+                            },
+                            "tabOffset": {
+                                "description": "The distance from the top left edge of the tab group for tabs.",
+                                "type": "integer",
+                                "default": 2
+                            },
+                            "tabLeftOffset": {
+                                "description": "The distance from left edge of the tab group for tabs. Defaults to TabOffset.",
+                                "type": "integer",
+                                "default": -1
+                            },
+                            "tabTopOffset": {
+                                "description": "The distance from top edge of the tab group for tabs. Defaults to TabOffset.",
+                                "type": "integer",
+                                "default": -1
+                            },
+                            "tabMargin": {
+                                "description": "The distance between tabs in a tab group.",
+                                "type": "integer",
+                                "default": 4
+                            },
+                            "minimumTabSize": {
+                                "description": "The minimum width of a tab.",
+                                "type": "integer",
+                                "default": 40
+                            },
+                            "tabSize": {
+                                "description": "The width of a tab.",
+                                "type": "integer",
+                                "default": 100
+                            },
+                            "tabBorderSize": {
+                                "description": "The size of the border around a tab. It behaves like padding, so the tab item does not enlarge.",
+                                "type": "integer",
+                                "default": 0
+                            },
+                            "tabCaptionScale": {
+                                "description": "The ratio between the size of a tab and the caption in it.",
+                                "type": "number",
+                                "default": 0.6
+                            },
+                            "textFontWeight": {
+                                "description": "The font weight of the text in a tab. Defaults to Regular",
+                                "type": "string",
+                                "enum": [
+                                    "Unspecified",
+                                    "Thin",
+                                    "ExtraLight",
+                                    "UltraLight",
+                                    "Light",
+                                    "Regular",
+                                    "Normal",
+                                    "Medium",
+                                    "SemiBold",
+                                    "DemiBold",
+                                    "Bold",
+                                    "ExtraBold",
+                                    "UltraBold",
+                                    "Black",
+                                    "Heavy",
+                                    "ExtraBlack",
+                                    "UltraBlack"
+                                ],
+                                "default": "Medium"
+                            },
+                            "tabTextSize": {
+                                "description": "The font size of the text in a tab. Defaults to the tab caption scale",
+                                "type": "integer",
+                                "default": -1
+                            },
+                            "tabCloseButtonSize": {
+                                "description": "The size of the close button on each tab.",
+                                "type": "number"
+                            },
+                            "buttonOffset": {
+                                "description": "The difference between the height of a tab and the height of the tab group buttons.",
+                                "type": "integer",
+                                "default": 1
+                            },
+                            "buttonMargin": {
+                                "description": "The distance between the tab group buttons.",
+                                "type": "integer",
+                                "default": 1
+                            },
+                            "keepTabDragging": {
+                                "type": "boolean",
+                                "default": true
+                            },
+                            "flatWhenSingle": {
+                                "description": "When `true`, the tab window will look as a flat window (without a tab header) when it is single.\r\n            Tabs will appear automatically when you add one or more tab windows to it.",
+                                "type": "boolean",
+                                "default": false
+                            },
+                            "headerButtonsForegroundColor": {
+                                "description": "The foreground color of the buttons in the header of a tab group.",
+                                "type": "string",
+                                "default": "#AB6E3"
+                            },
+                            "headerButtonsBackgroundColor": {
+                                "description": "The background color of the buttons in the header of a tab group.",
+                                "type": "string",
+                                "default": "#000000"
+                            },
+                            "headerButtonsGroupBackgroundColor": {
+                                "description": "The background color of all buttons in the header of a tab group. (Visible when there is a margin between the tab header buttons.)",
+                                "type": "string",
+                                "default": "#000000"
+                            },
+                            "headerButtonsHoverForegroundColor": {
+                                "description": "The foreground color of the buttons in the header of a tab group when they are hovered over.",
+                                "type": "string",
+                                "default": "#000000"
+                            },
+                            "headerButtonsHoverBackgroundColor": {
+                                "description": "The background color of the buttons in the header of a tab group when they are hovered over.",
+                                "type": "string",
+                                "default": "#AB6E3"
+                            },
+                            "activeTabHoverColor": {
+                                "description": "The background color of an active and hovered tab. Defaults to the active color",
+                                "type": "string"
+                            },
+                            "activeTabHoverTextColor": {
+                                "description": "The foreground/text color of an active and hovered tab. Defaults to the active color",
+                                "type": "string"
+                            },
+                            "headerButtons": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                    "backgroundColor": {
+                                        "description": "The background color of the buttons in the header of a tab group.",
+                                        "type": "string",
+                                        "default": "#000000"
+                                    },
+                                    "foregroundColor": {
+                                        "description": "The foreground color of the buttons in the header of a tab group.",
+                                        "type": "string",
+                                        "default": "#AB6E3"
+                                    },
+                                    "hoverBackgroundColor": {
+                                        "description": "The background color of the buttons in the header of a tab group when they are hovered over.",
+                                        "type": "string",
+                                        "default": "#AB6E3"
+                                    },
+                                    "hoverForegroundColor": {
+                                        "description": "The foreground color of the buttons in the header of a tab group when they are hovered over.",
+                                        "type": "string",
+                                        "default": "#000000"
+                                    },
+                                    "groupBackgroundColor": {
+                                        "description": "The background color of all buttons in the header of a tab group. (Visible when there is a margin between the tab header buttons.)",
+                                        "type": "string",
+                                        "default": "#000000"
+                                    },
+                                    "close": {
+                                        "type": "object",
+                                        "additionalProperties": false,
+                                        "properties": {
+                                            "backgroundColor": {
+                                                "type": "string"
+                                            },
+                                            "foregroundColor": {
+                                                "description": "The foreground color for the close  button of a tab group. Defaults to tab buttons foreground color; path - .tabs.headerButtons",
+                                                "type": "string"
+                                            },
+                                            "hoverBackgroundColor": {
+                                                "description": "The background color for the close  button when hovered. Defaults to tab buttons hover background color; path - .tabs.headerButtons",
+                                                "type": "string"
+                                            },
+                                            "hoverForegroundColor": {
+                                                "description": "The background color for the close  button when hovered. Defaults to tab buttons hover background color; path - .tabs.headerButtons",
+                                                "type": "string"
+                                            },
+                                            "tooltip": {
+                                                "description": "The text which appears in the tooltip when the close button is hovered. Defaults to \"Close\". To remove the tooltip pass an empty string - \"\"",
+                                                "type": "string",
+                                                "default": "Close"
+                                            }
+                                        }
+                                    },
+                                    "maximize": {
+                                        "type": "object",
+                                        "additionalProperties": false,
+                                        "properties": {
+                                            "backgroundColor": {
+                                                "type": "string"
+                                            },
+                                            "foregroundColor": {
+                                                "description": "The foreground color for the maximize button of a tab group. Defaults to tab buttons foreground color; path - .tabs.headerButtons",
+                                                "type": "string"
+                                            },
+                                            "hoverBackgroundColor": {
+                                                "description": "The background color for the maximize button when hovered. Defaults to tab buttons hover background color; path - .tabs.headerButtons",
+                                                "type": "string"
+                                            },
+                                            "hoverForegroundColor": {
+                                                "description": "The background color for the maximize button when hovered. Defaults to tab buttons hover background color; path - .tabs.headerButtons",
+                                                "type": "string"
+                                            },
+                                            "tooltip": {
+                                                "description": "The text which appears in the tooltip when the maximize button is hovered. Defaults to \"Maximize\". To remove the tooltip pass an empty string - \"\"",
+                                                "type": "string",
+                                                "default": "Maximize"
+                                            }
+                                        }
+                                    },
+                                    "minimize": {
+                                        "type": "object",
+                                        "additionalProperties": false,
+                                        "properties": {
+                                            "backgroundColor": {
+                                                "type": "string"
+                                            },
+                                            "foregroundColor": {
+                                                "description": "The foreground color for the minimize button of a tab group. Defaults to tab buttons foreground color; path - .tabs.headerButtons",
+                                                "type": "string"
+                                            },
+                                            "hoverBackgroundColor": {
+                                                "description": "The background color for the minimize button when hovered. Defaults to tab buttons hover background color; path - .tabs.headerButtons",
+                                                "type": "string"
+                                            },
+                                            "hoverForegroundColor": {
+                                                "description": "The background color for the minimize button when hovered. Defaults to tab buttons hover background color; path - .tabs.headerButtons",
+                                                "type": "string"
+                                            },
+                                            "tooltip": {
+                                                "description": "The text which appears in the tooltip when the minimize button is hovered. Defaults to \"Minimize\". To remove the tooltip pass an empty string - \"\"",
+                                                "type": "string",
+                                                "default": "Minimize"
+                                            }
+                                        }
+                                    },
+                                    "restore": {
+                                        "type": "object",
+                                        "additionalProperties": false,
+                                        "properties": {
+                                            "backgroundColor": {
+                                                "type": "string"
+                                            },
+                                            "foregroundColor": {
+                                                "description": "The foreground color for the restore button of a tab group. Defaults to tab buttons foreground color; path - .tabs.headerButtons",
+                                                "type": "string"
+                                            },
+                                            "hoverBackgroundColor": {
+                                                "description": "The background color for the restore button when hovered. Defaults to tab buttons hover background color; path - .tabs.headerButtons",
+                                                "type": "string"
+                                            },
+                                            "hoverForegroundColor": {
+                                                "description": "The background color for the restore button when hovered. Defaults to tab buttons hover background color; path - .tabs.headerButtons",
+                                                "type": "string"
+                                            },
+                                            "tooltip": {
+                                                "description": "The text which appears in the tooltip when the restore button is hovered. Defaults to \"Restore\". To remove the tooltip pass an empty string - \"\"",
+                                                "type": "string",
+                                                "default": "Restore"
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "closeButton": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                    "color": {
+                                        "description": "The color of the close button in a tab . Defaults to tabTextColor in the tabs section.",
+                                        "type": "string"
+                                    },
+                                    "hoverColor": {
+                                        "description": "The color of the close button in a tab when hovered. Defaults to tabTextColor in the tabs section.",
+                                        "type": "string"
+                                    },
+                                    "tooltip": {
+                                        "description": "The text which appears in the tooltip when the close button in a tab is hovered. Defaults to \"Close\". To remove the tooltip pass an empty string - \"\"",
+                                        "type": "string",
+                                        "default": "Close"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "tooltips": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                            "backgroundColor": {
+                                "description": "The tooltips background color",
+                                "type": "string",
+                                "default": "#A9A9A9"
+                            },
+                            "foregroundColor": {
+                                "description": "The tooltips foregorund color",
+                                "type": "string",
+                                "default": "#FFFFFF"
+                            }
+                        }
+                    },
+                    "buttons": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                            "backgroundColor": {
+                                "description": "The background color of the window buttons. Defaults to the base property backgroundColor",
+                                "type": "string"
+                            },
+                            "foregroundColor": {
+                                "description": "The foreground color of the window buttons. Defaults to the base property foregroundColor",
+                                "type": "string"
+                            },
+                            "hoverBackgroundColor": {
+                                "description": "The background color of the window buttons when hovered. Defaults to the base property foregroundColor",
+                                "type": "string"
+                            },
+                            "hoverForegroundColor": {
+                                "description": "The foreground color of the window buttons when hovered. Defaults to the base property backgroundColor",
+                                "type": "string"
+                            },
+                            "close": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                    "backgroundColor": {
+                                        "type": "string"
+                                    },
+                                    "foregroundColor": {
+                                        "description": "The foreground color for the close button of a window. Defaults to window buttons foreground color; path - buttons",
+                                        "type": "string"
+                                    },
+                                    "hoverBackgroundColor": {
+                                        "description": "The background color for the close button when hovered. Defaults to window buttons hover background color; path - buttons",
+                                        "type": "string"
+                                    },
+                                    "hoverForegroundColor": {
+                                        "description": "The background color for the close button when hovered. Defaults to window buttons hover background color; path - buttons",
+                                        "type": "string"
+                                    },
+                                    "tooltip": {
+                                        "description": "The text which appears in the tooltip when the close button is hovered. Defaults to \"Close\". To remove the tooltip pass an empty string - \"\"",
+                                        "type": "string",
+                                        "default": "Close"
+                                    }
+                                }
+                            },
+                            "maximize": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                    "backgroundColor": {
+                                        "type": "string"
+                                    },
+                                    "foregroundColor": {
+                                        "description": "The foreground color for the maximize button of a window. Defaults to window buttons foreground color; path - buttons",
+                                        "type": "string"
+                                    },
+                                    "hoverBackgroundColor": {
+                                        "description": "The background color for the maximize button when hovered. Defaults to window buttons hover background color; path - buttons",
+                                        "type": "string"
+                                    },
+                                    "hoverForegroundColor": {
+                                        "description": "The background color for the maximize button when hovered. Defaults to window buttons hover background color; path - buttons",
+                                        "type": "string"
+                                    },
+                                    "tooltip": {
+                                        "description": "The text which appears in the tooltip when the maximize button is hovered. Defaults to \"Maximize\". To remove the tooltip pass an empty string - \"\"",
+                                        "type": "string",
+                                        "default": "Maximize"
+                                    }
+                                }
+                            },
+                            "minimize": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                    "backgroundColor": {
+                                        "type": "string"
+                                    },
+                                    "foregroundColor": {
+                                        "description": "The foreground color for the minimize button of a window. Defaults to window buttons foreground color; path - buttons",
+                                        "type": "string"
+                                    },
+                                    "hoverBackgroundColor": {
+                                        "description": "The background color for the minimize button when hovered. Defaults to window buttons hover background color; path - buttons",
+                                        "type": "string"
+                                    },
+                                    "hoverForegroundColor": {
+                                        "description": "The background color for the minimize button when hovered. Defaults to window buttons hover background color; path - buttons",
+                                        "type": "string"
+                                    },
+                                    "tooltip": {
+                                        "description": "The text which appears in the tooltip when the minimize button is hovered. Defaults to \"Minimize\". To remove the tooltip pass an empty string - \"\"",
+                                        "type": "string",
+                                        "default": "Minimize"
+                                    }
+                                }
+                            },
+                            "restore": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                    "backgroundColor": {
+                                        "type": "string"
+                                    },
+                                    "foregroundColor": {
+                                        "description": "The foreground color for the restore button of a window. Defaults to window buttons foreground color; path - buttons",
+                                        "type": "string"
+                                    },
+                                    "hoverBackgroundColor": {
+                                        "description": "The background color for the restore button when hovered. Defaults to window buttons hover background color; path - buttons",
+                                        "type": "string"
+                                    },
+                                    "hoverForegroundColor": {
+                                        "description": "The background color for the restore button when hovered. Defaults to window buttons hover background color; path - buttons",
+                                        "type": "string"
+                                    },
+                                    "tooltip": {
+                                        "description": "The text which appears in the tooltip when the restore button is hovered. Defaults to \"Restore\". To remove the tooltip pass an empty string - \"\"",
+                                        "type": "string",
+                                        "default": "Restore"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "group": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                            "headerHeight": {
+                                "description": "The height of the group header. The default is 25",
+                                "type": "integer",
+                                "default": 25
+                            },
+                            "titleSize": {
+                                "description": "The size of the title in the group header. The default is 15.0",
+                                "type": "number",
+                                "default": 15.0
+                            },
+                            "titleFontWeight": {
+                                "description": "The font weight of the title in the group header. The default is Normal",
+                                "type": "string",
+                                "enum": [
+                                    "Unspecified",
+                                    "Thin",
+                                    "ExtraLight",
+                                    "UltraLight",
+                                    "Light",
+                                    "Regular",
+                                    "Normal",
+                                    "Medium",
+                                    "SemiBold",
+                                    "DemiBold",
+                                    "Bold",
+                                    "ExtraBold",
+                                    "UltraBold",
+                                    "Black",
+                                    "Heavy",
+                                    "ExtraBlack",
+                                    "UltraBlack"
+                                ],
+                                "default": "Normal"
+                            },
+                            "focusTitleFontWeight": {
+                                "description": "The font weight of the group title when the group is focused. Defaults to the value of titleFontWeight",
+                                "type": "string",
+                                "enum": [
+                                    "Unspecified",
+                                    "Thin",
+                                    "ExtraLight",
+                                    "UltraLight",
+                                    "Light",
+                                    "Regular",
+                                    "Normal",
+                                    "Medium",
+                                    "SemiBold",
+                                    "DemiBold",
+                                    "Bold",
+                                    "ExtraBold",
+                                    "UltraBold",
+                                    "Black",
+                                    "Heavy",
+                                    "ExtraBlack",
+                                    "UltraBlack"
+                                ],
+                                "default": "Unspecified"
+                            },
+                            "buttons": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                    "backgroundColor": {
+                                        "description": "The background color of the group buttons. Defaults to the base level backgroundColor",
+                                        "type": "string"
+                                    },
+                                    "foregroundColor": {
+                                        "description": "The foregroundColor color of the group buttons. Defaults to the base level textColor",
+                                        "type": "string"
+                                    },
+                                    "hoverBackgroundColor": {
+                                        "description": "The backgroundColor color of the group buttons when hovered. Defaults to the base level textColor",
+                                        "type": "string"
+                                    },
+                                    "hoverForegroundColor": {
+                                        "description": "The foreground color of the group buttons when hovered. Defaults to the base level frameColor",
+                                        "type": "string"
+                                    },
+                                    "rightOffset": {
+                                        "description": "Changes the right offset of the group buttons",
+                                        "type": "integer",
+                                        "default": 0
+                                    },
+                                    "close": {
+                                        "type": "object",
+                                        "additionalProperties": false,
+                                        "properties": {
+                                            "backgroundColor": {
+                                                "description": "The background color for the close button of a group. Defaults to group buttons background color; path - group.buttons",
+                                                "type": "string"
+                                            },
+                                            "foregroundColor": {
+                                                "description": "The foreground color for the close button of a group. Defaults to group buttons foreground color; path - group.buttons",
+                                                "type": "string"
+                                            },
+                                            "hoverBackgroundColor": {
+                                                "description": "The background color for the close button when hovered. Defaults to group buttons hover background color; path - group.buttons",
+                                                "type": "string"
+                                            },
+                                            "hoverForegroundColor": {
+                                                "description": "The background color for the close button when hovered. Defaults to group buttons hover background color; path - group.buttons",
+                                                "type": "string"
+                                            },
+                                            "tooltip": {
+                                                "description": "The text which appears in the tooltip when the close button is hovered. Defaults to \"Close\". To remove the tooltip pass an empty string - \"\"",
+                                                "type": "string",
+                                                "default": "Close"
+                                            }
+                                        }
+                                    },
+                                    "maximize": {
+                                        "type": "object",
+                                        "additionalProperties": false,
+                                        "properties": {
+                                            "backgroundColor": {
+                                                "description": "The background color for the maximize button of a group. Defaults to group buttons background color; path - group.buttons",
+                                                "type": "string"
+                                            },
+                                            "foregroundColor": {
+                                                "description": "The foreground color for the maximize button of a group. Defaults to group buttons foreground color; path - group.buttons",
+                                                "type": "string"
+                                            },
+                                            "hoverBackgroundColor": {
+                                                "description": "The background color for the maximize button when hovered. Defaults to group buttons hover background color; path - group.buttons",
+                                                "type": "string"
+                                            },
+                                            "hoverForegroundColor": {
+                                                "description": "The background color for the maximize button when hovered. Defaults to group buttons hover background color; path - group.buttons",
+                                                "type": "string"
+                                            },
+                                            "tooltip": {
+                                                "description": "The text which appears in the tooltip when the maximize button is hovered. Defaults to \"Maximize\". To remove the tooltip pass an empty string - \"\"",
+                                                "type": "string",
+                                                "default": "Maximize"
+                                            }
+                                        }
+                                    },
+                                    "minimize": {
+                                        "type": "object",
+                                        "additionalProperties": false,
+                                        "properties": {
+                                            "backgroundColor": {
+                                                "description": "The background color for the minimize button of a group. Defaults to group buttons background color; path - group.buttons",
+                                                "type": "string"
+                                            },
+                                            "foregroundColor": {
+                                                "description": "The foreground color for the minimize button of a group. Defaults to group buttons foreground color; path - group.buttons",
+                                                "type": "string"
+                                            },
+                                            "hoverBackgroundColor": {
+                                                "description": "The background color for the minimize button when hovered. Defaults to group buttons hover background color; path - group.buttons",
+                                                "type": "string"
+                                            },
+                                            "hoverForegroundColor": {
+                                                "description": "The background color for the minimize button when hovered. Defaults to group buttons hover background color; path - group.buttons",
+                                                "type": "string"
+                                            },
+                                            "tooltip": {
+                                                "description": "The text which appears in the tooltip when the minimize button is hovered. Defaults to \"Minimize\". To remove the tooltip pass an empty string - \"\"",
+                                                "type": "string",
+                                                "default": "Minimize"
+                                            }
+                                        }
+                                    },
+                                    "restore": {
+                                        "type": "object",
+                                        "additionalProperties": false,
+                                        "properties": {
+                                            "backgroundColor": {
+                                                "description": "The background color for the restore button of a group. Defaults to group buttons background color; path - group.buttons",
+                                                "type": "string"
+                                            },
+                                            "foregroundColor": {
+                                                "description": "The foreground color for the restore button of a group. Defaults to group buttons foreground color; path - group.buttons",
+                                                "type": "string"
+                                            },
+                                            "hoverBackgroundColor": {
+                                                "description": "The background color for the restore button when hovered. Defaults to group buttons hover background color; path - group.buttons",
+                                                "type": "string"
+                                            },
+                                            "hoverForegroundColor": {
+                                                "description": "The background color for the restore button when hovered. Defaults to group buttons hover background color; path - group.buttons",
+                                                "type": "string"
+                                            },
+                                            "tooltip": {
+                                                "description": "The text which appears in the tooltip when the restore button is hovered. Defaults to \"Restore\". To remove the tooltip pass an empty string - \"\"",
+                                                "type": "string",
+                                                "default": "Restore"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "swimlanes": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                            "topWindowBorderSize": {
+                                "description": "The size of the top Swimlane window border. It does not include the title height.",
+                                "type": "number",
+                                "default": 5.0
+                            },
+                            "topWindowTitleHeight": {
+                                "description": "The height of the title in the top Swimlane window.",
+                                "type": "number",
+                                "default": 25.0
+                            },
+                            "topWindowTextSize": {
+                                "description": "The size of the title text in the top Swimlane window.",
+                                "type": "number",
+                                "default": 12.0
+                            },
+                            "topWindowTitleFontHeight": {
+                                "type": "string",
+                                "enum": [
+                                    "Unspecified",
+                                    "Thin",
+                                    "ExtraLight",
+                                    "UltraLight",
+                                    "Light",
+                                    "Regular",
+                                    "Normal",
+                                    "Medium",
+                                    "SemiBold",
+                                    "DemiBold",
+                                    "Bold",
+                                    "ExtraBold",
+                                    "UltraBold",
+                                    "Black",
+                                    "Heavy",
+                                    "ExtraBlack",
+                                    "UltraBlack"
+                                ],
+                                "default": "Normal"
+                            },
+                            "splitterSize": {
+                                "description": "Changes the thickness of the Swimlane splitter.",
+                                "type": "number",
+                                "default": 5.0
+                            },
+                            "nonMovableSplitterSize": {
+                                "type": "number",
+                                "default": 1.0
+                            },
+                            "splitterDragBorderSize": {
+                                "description": "Size of the Swimlane splitter when dragged.",
+                                "type": "number",
+                                "default": 1.0
+                            },
+                            "minElementSize": {
+                                "description": "The minimum height and width of Swimlane rows/columns.",
+                                "type": "number",
+                                "default": 50.0
+                            },
+                            "topWindowBackgroundColor": {
+                                "description": "The background color of the top Swimlane window.",
+                                "type": "string",
+                                "default": "#000000"
+                            },
+                            "topWindowForegroundColor": {
+                                "description": "The color of text and buttons on the top Swimlane window.",
+                                "type": "string",
+                                "default": "#999999"
+                            },
+                            "laneBackgroundColor": {
+                                "description": "Changes the background color of empty Swimlanes.",
+                                "type": "string",
+                                "default": "#303030"
+                            },
+                            "splitterColor": {
+                                "description": "Changes the color of the Swimlane splitter.",
+                                "type": "string",
+                                "default": "#505050"
+                            },
+                            "splitterHoverColor": {
+                                "description": "Changes the color of the splitter (without the drag borders) when hovered over.",
+                                "type": "string",
+                                "default": "#707070"
+                            },
+                            "splitterHoverBorderColor": {
+                                "description": "Changes the drag borders color when the splitter is hovered over.",
+                                "type": "string",
+                                "default": "#505050"
+                            },
+                            "splitterDragColor": {
+                                "description": "Changes the color of the splitter (without the drag borders) when the splitter is being dragged.",
+                                "type": "string",
+                                "default": "#A0A0A0"
+                            },
+                            "splitterDragBorderColor": {
+                                "description": "Changes the color of the dragging borders when the splitter is being dragged.",
+                                "type": "string",
+                                "default": "#FFFFFF"
+                            },
+                            "tabs": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                    "headerSize": {
+                                        "description": "Changes the header size of a tab extracted from a workspace.",
+                                        "type": "number",
+                                        "default": 30.0
+                                    },
+                                    "fontWeight": {
+                                        "type": "string",
+                                        "enum": [
+                                            "Unspecified",
+                                            "Thin",
+                                            "ExtraLight",
+                                            "UltraLight",
+                                            "Light",
+                                            "Regular",
+                                            "Normal",
+                                            "Medium",
+                                            "SemiBold",
+                                            "DemiBold",
+                                            "Bold",
+                                            "ExtraBold",
+                                            "UltraBold",
+                                            "Black",
+                                            "Heavy",
+                                            "ExtraBlack",
+                                            "UltraBlack"
+                                        ],
+                                        "default": "Normal"
+                                    },
+                                    "headerColor": {
+                                        "description": "Changes the header background color of Swimlane tabs.",
+                                        "type": "string",
+                                        "default": "#000000"
+                                    },
+                                    "size": {
+                                        "description": "Changes the size of a Swimlane tab.",
+                                        "type": "number",
+                                        "default": 150.0
+                                    },
+                                    "minSize": {
+                                        "description": "Sets the minimum width of a Swimlane tab.",
+                                        "type": "number",
+                                        "default": 50.0
+                                    },
+                                    "buttonsOffset": {
+                                        "description": "Changes the left offset of the Swimlane tabs and the top left offset of workspace tabs and the \"Add workspace\" button.",
+                                        "type": "integer",
+                                        "default": 1
+                                    },
+                                    "margin": {
+                                        "description": "The offset of both worskspace tabs and Swimlane tabs from the top of the header.",
+                                        "type": "integer",
+                                        "default": 1
+                                    },
+                                    "borderSize": {
+                                        "description": "Thickness of the border around Swimlane tabs.",
+                                        "type": "integer",
+                                        "default": 1
+                                    },
+                                    "closeButtonSize": {
+                                        "description": "The \"Close\" button size of Swimlane tabs.",
+                                        "type": "number",
+                                        "default": 8.0
+                                    },
+                                    "innerMargin": {
+                                        "description": "Left and right margin for the text and the \"Close\" button of Swimlane tabs and for the text in workspace tabs.",
+                                        "type": "integer",
+                                        "default": 5
+                                    },
+                                    "borderColor": {
+                                        "description": "The color of the border around inactive Swimlane tabs.",
+                                        "type": "string",
+                                        "default": "#333333"
+                                    },
+                                    "separatorColor": {
+                                        "type": "string",
+                                        "default": "#000000"
+                                    },
+                                    "separatorHeight": {
+                                        "type": "integer",
+                                        "default": 0
+                                    },
+                                    "color": {
+                                        "description": "The color of inactive Swimlane tabs.",
+                                        "type": "string",
+                                        "default": "#333333"
+                                    },
+                                    "textColor": {
+                                        "description": "The color of the buttons and titles of inactive Swimlane tabs.",
+                                        "type": "string",
+                                        "default": "#999999"
+                                    },
+                                    "hoverColor": {
+                                        "description": "The color of inactive Swimlane tabs when hovered over.",
+                                        "type": "string",
+                                        "default": "#333333"
+                                    },
+                                    "hoverTextColor": {
+                                        "description": "The color of the text and the \"Close\" button of inactive Swimlane tabs when hovered over.",
+                                        "type": "string",
+                                        "default": "#FFFFFF"
+                                    },
+                                    "activeBorderColor": {
+                                        "description": "The color of the border of the active Swimlane tab.",
+                                        "type": "string",
+                                        "default": "#555555"
+                                    },
+                                    "activeColor": {
+                                        "description": "The color of the active Swimlane tab.",
+                                        "type": "string",
+                                        "default": "#000000"
+                                    },
+                                    "activeTextColor": {
+                                        "description": "The color of the text and the \"Close\" button of the active Swimlane tab.",
+                                        "type": "string",
+                                        "default": "#AB6E3"
+                                    }
+                                }
+                            },
+                            "workspaceTabs": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                    "headerSize": {
+                                        "description": "The height of workspace tabs.",
+                                        "type": "number",
+                                        "default": 35.0
+                                    },
+                                    "headerColor": {
+                                        "description": "The color of the workspace header.",
+                                        "type": "string",
+                                        "default": "#333333"
+                                    },
+                                    "size": {
+                                        "description": "The width of the workspace tab.",
+                                        "type": "number",
+                                        "default": 225.0
+                                    },
+                                    "borderSize": {
+                                        "description": "The thickness of the border around a Swimlane workspace.",
+                                        "type": "number",
+                                        "default": 1.0
+                                    },
+                                    "closeButtonSize": {
+                                        "description": "The size of the \"Close\" button of a workspace tab.",
+                                        "type": "number",
+                                        "default": 11.0
+                                    },
+                                    "newButtonSize": {
+                                        "description": "The size of the \"Add workspace\" button.",
+                                        "type": "number",
+                                        "default": 27.0
+                                    },
+                                    "newButtonMargin": {
+                                        "description": "The distance between workspace tabs and the \"Add workspace\" button.",
+                                        "type": "integer",
+                                        "default": 5
+                                    },
+                                    "newButtonColor": {
+                                        "description": "The color of the \"Add workspace\" button when it is not hovered over.",
+                                        "type": "string",
+                                        "default": "#222222"
+                                    },
+                                    "newButtonBorderColor": {
+                                        "description": "The border color of the \"Add workspace\" button regardless of the button state.",
+                                        "type": "string",
+                                        "default": "#222222"
+                                    },
+                                    "newButtonTextColor": {
+                                        "description": "The color of the text in the \"Add workspace\" button when the button is not hovered over.",
+                                        "type": "string",
+                                        "default": "#999999"
+                                    },
+                                    "innerMargin": {
+                                        "description": "The left and right margin of text and buttons in a workspace tab.",
+                                        "type": "integer",
+                                        "default": 10
+                                    },
+                                    "borderColor": {
+                                        "description": "The color of the border around a workspace tab.",
+                                        "type": "string",
+                                        "default": "#222222"
+                                    },
+                                    "color": {
+                                        "description": "The color of inactive workspace tabs.",
+                                        "type": "string",
+                                        "default": "#222222"
+                                    },
+                                    "textColor": {
+                                        "description": "The color of text and icons in inactive workspace tabs.",
+                                        "type": "string",
+                                        "default": "#999999"
+                                    },
+                                    "modifiedIconColor": {
+                                        "type": "string",
+                                        "default": "#FF0000"
+                                    },
+                                    "hoverColor": {
+                                        "description": "The color of an inactive workspace tab when it is hovered over.",
+                                        "type": "string",
+                                        "default": "#333333"
+                                    },
+                                    "hoverTextColor": {
+                                        "description": "The color of the text of an inactive workspace tab when it is hovered over.",
+                                        "type": "string",
+                                        "default": "#FFFFFF"
+                                    },
+                                    "modifiedHoverIconColor": {
+                                        "type": "string",
+                                        "default": "#FF0000"
+                                    },
+                                    "activeBorderColor": {
+                                        "description": "The border color of the active workspace tab.",
+                                        "type": "string",
+                                        "default": "#555555"
+                                    },
+                                    "activeColor": {
+                                        "description": "The color of the active workspace tab.",
+                                        "type": "string",
+                                        "default": "#000000"
+                                    },
+                                    "activeTextColor": {
+                                        "description": "The color of the text of the active workspace tab.",
+                                        "type": "string",
+                                        "default": "#AB6E3"
+                                    },
+                                    "modifiedActiveIconColor": {
+                                        "type": "string",
+                                        "default": "#FF0000"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "dialog": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                            "backgroundColor": {
+                                "type": "string",
+                                "default": "#000000"
+                            },
+                            "foregroundColor": {
+                                "type": "string",
+                                "default": "#FFFFFF"
+                            },
+                            "borderColor": {
+                                "type": "string",
+                                "default": "#FF939393"
+                            },
+                            "borderSize": {
+                                "type": "number",
+                                "default": 1.0
+                            },
+                            "textSize": {
+                                "type": "number",
+                                "default": 15.0
+                            },
+                            "buttonBackgroundColor": {
+                                "type": "string",
+                                "default": "#FF939393"
+                            },
+                            "buttonForegroundColor": {
+                                "type": "string",
+                                "default": "#FFFFFF"
+                            },
+                            "buttonSelectedColor": {
+                                "type": "string",
+                                "default": "#FF00CDFC"
+                            },
+                            "buttonTextSize": {
+                                "type": "number",
+                                "default": 13.0
+                            },
+                            "cancelButtonForegroundColor": {
+                                "type": "string",
+                                "default": "#FF939393"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "required": [
+            "name",
+            "displayName"
+        ]
+    }
+}

@@ -11,25 +11,35 @@
 import * as vscode from 'vscode';
 import * as json5 from "json5";
 import * as ajv from "ajv";
-import errorTextComposer from "./errorTextComposer";
-import { ValidationSummary, ValidationError } from './types';
-import assetProvider from './assetProvider';
+import errorTextComposer from "../errorTextComposer";
+import { ValidationSummary, ValidationError, Validator } from './types';
+import assetProvider from '../assetProvider';
 
-class ConfigurationValidator {
+export class ApplicationConfigValidator implements Validator {
     private readonly ajvVal: ajv.Ajv;
     private readonly AppSchemaEmptyKey = "application-empty.json";
+    private readonly AppSchemaKey = "appSchema";
+    private readonly SystemSchemaKey = "systemSchema";
 
-    constructor() {
-        this.ajvVal = new ajv({ useDefaults: true, meta: true, jsonPointers: true });
-        this.ajvVal.addMetaSchema(require('ajv/lib/refs/json-schema-draft-06.json'));
-        require("ajv-keywords")(this.ajvVal, ["transform"]);
+    constructor(ajvVal?: ajv.Ajv) {
+        const withOutsideInstance = ajvVal !== undefined && ajvVal !== null;
+        this.ajvVal = ajvVal || new ajv({ useDefaults: true, meta: true, jsonPointers: true });
+
+        if (!withOutsideInstance) {
+            this.ajvVal.addMetaSchema(require('ajv/lib/refs/json-schema-draft-06.json'));
+            require("ajv-keywords")(this.ajvVal, ["transform"]);
+        }
+    }
+
+    public get priorityIndex() {
+        return 1;
     }
 
     public init() {
         const glueAppSchema = assetProvider.getAppSchema();
         const glueSystemSchema = assetProvider.getSystemSchema();
-        this.ajvVal.addSchema(JSON.parse(glueAppSchema), "appSchema");
-        this.ajvVal.addSchema(JSON.parse(glueSystemSchema), "systemSchema");
+        this.ajvVal.addSchema(JSON.parse(glueAppSchema), this.AppSchemaKey);
+        this.ajvVal.addSchema(JSON.parse(glueSystemSchema), this.SystemSchemaKey);
 
         const appSchemaClone: any = JSON.parse(glueAppSchema);
         appSchemaClone.definitions.application.properties.details = { type: "object" };
@@ -37,6 +47,8 @@ class ConfigurationValidator {
         this.ajvVal.addSchema(appSchemaClone, this.AppSchemaEmptyKey);
 
         const types: string[] = appSchemaClone.definitions.application.properties.type.enum;
+        appSchemaClone.definitions.application.properties.type.transform = ["toEnumCase"];
+        appSchemaClone.definitions.application.properties.configMode.transform = ["toEnumCase"];
         types.forEach((appType) => {
             const typedSchema = JSON.parse(glueAppSchema) as { [key: string]: any };
             const details = typedSchema.definitions[appType];
@@ -60,10 +72,14 @@ class ConfigurationValidator {
         });
     }
 
-    public onChange(document: vscode.TextDocument): ValidationSummary {
+    public validate(document: vscode.TextDocument): ValidationSummary {
         const validationResult = this.validateTextInEditor(document.getText());
 
         return validationResult;
+    }
+
+    public isThemeConfig(text: string): boolean {
+        return false;
     }
 
     private validateTextInEditor(text: string): ValidationSummary {
@@ -81,7 +97,9 @@ class ConfigurationValidator {
                 error.dataPath = undefined;
                 return {
                     isValid,
-                    error
+                    error,
+                    isApplicationResult: true,
+                    isThemeResult: false
                 };
             }
 
@@ -94,7 +112,9 @@ class ConfigurationValidator {
 
                 return {
                     isValid: appIsValid,
-                    error: appErrors[0] ? errorTextComposer.compose(appErrors[0]) : { message: "Unknown error" }
+                    error: appErrors[0] ? errorTextComposer.compose(appErrors[0]) : { message: "Unknown error" },
+                    isApplicationResult: true,
+                    isThemeResult: false
                 };
             });
 
@@ -110,7 +130,9 @@ class ConfigurationValidator {
         } catch (error) {
             return {
                 isValid: false,
-                error: { message: "Invalid JSON" }
+                error: { message: "Invalid JSON" },
+                isApplicationResult: true,
+                isThemeResult: false
             };
         }
     }
@@ -122,5 +144,3 @@ class ConfigurationValidator {
         }
     }
 }
-
-export default new ConfigurationValidator();

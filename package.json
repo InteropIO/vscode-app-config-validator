@@ -3,7 +3,7 @@
     "displayName": "Glue42 Configuration Validator",
     "description": "Tool that lints the application configuration files for Glue42 Desktop.",
     "license": "./LICENSE",
-    "version": "0.2.8",
+    "version": "0.3.0",
     "repository": {
         "url": "https://github.com/Tick42/vscode-glue42-app-config-validator"
     },
@@ -69,6 +69,11 @@
                     "type": "boolean",
                     "default": true,
                     "description": "Choose whether to underline any configuration errors in the editor."
+                },
+                "glue42-configuration-validator.validateThemes": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "If enabled the JSON files which resemble the structure of GlueDesktop themes will be validated"
                 }
             }
         }
@@ -95,6 +100,7 @@
     },
     "dependencies": {
         "ajv": "^6.4.0",
+        "ajv-keywords": "^3.4.1",
         "fs-assistant": "^0.1.2",
         "json-fixer": "^1.4.0",
         "json-schema-ref-parser": "^7.1.1",

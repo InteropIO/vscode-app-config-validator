@@ -9,7 +9,7 @@
  */
 
 import ajv = require("ajv");
-import { ValidationError } from "./types";
+import { ValidationError } from "./validator/types";
 
 class ErrorTextComposer {
     public compose(errorObject: ajv.ErrorObject): ValidationError {
@@ -34,12 +34,12 @@ class ErrorTextComposer {
     }
 
     private handleAdditionalProperties(errorObject: ajv.ErrorObject): ValidationError {
+        const additionalProperty: string = (errorObject.params as any).additionalProperty;
         const result = {
             message: "",
             dataPath: errorObject.dataPath,
             underLineMessage: "No information"
         };
-        const additionalProperty: string = (errorObject.params as any).additionalProperty;
         result.message = `Should not have the additional property "${additionalProperty}"`;
         result.underLineMessage = result.message;
 

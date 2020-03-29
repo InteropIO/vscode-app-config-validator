@@ -27,3 +27,6 @@ export const EXTENSION_NAME = "glue42-configuration-validator";
 export const STATUS_BAR_ITEM_VALID_TEXT = "Valid application configuration";
 export const STATUS_BAR_ITEM_INVALID_TEXT = "Invalid application configuration";
 
+export const UNDERLINE_ERRORS_OPTION = "underlineErrors";
+export const ENABLE_THEMES_VALIDATION_OPTION = "validateThemes";
+

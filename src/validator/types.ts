@@ -8,6 +8,8 @@
  * limitations under the License.
  */
 
+import * as vscode from "vscode";
+
 export interface ValidationError {
     message: string;
     dataPath?: string;
@@ -17,4 +19,13 @@ export interface ValidationError {
 export interface ValidationSummary {
     isValid: Boolean;
     error: ValidationError;
+    isThemeResult: boolean;
+    isApplicationResult: boolean;
+}
+
+export interface Validator {
+    init: () => void;
+    validate: (document: vscode.TextDocument) => ValidationSummary;
+    isThemeConfig: (text: string) => boolean;
+    priorityIndex: number;
 }

@@ -180,7 +180,6 @@
                     "items": {
                         "$ref": "#/definitions/intent"
                     }
-
                 }
             }
         },
@@ -324,7 +323,12 @@
                     "default": false
                 },
                 "isPopup": {
-                    "description": "Deprecated. If `true`, the window will open as a pop-up, sharing the lifetime and environment of the opener.",
+                    "description": "Deprecated, use `isChild` instead. If `true`, the window will open as a pop-up, sharing the lifetime and environment of the opener.",
+                    "type": "boolean",
+                    "default": false
+                },
+                "isChild": {
+                    "description": "If `true`, the window will be created as a child window of the application/window creating it. This means that it will share the lifetime and environment of the opener.",
                     "type": "boolean",
                     "default": false
                 },
@@ -793,6 +797,10 @@
                         },
                         "additionalProperties": false
                     }
+                },
+                "cascade": {
+                    "default": {},
+                    "$ref": "system.json#/definitions/cascadeConfig"
                 }
             },
             "required": [
@@ -934,6 +942,24 @@
                     "type": "integer",
                     "default": 400
                 },
+                "maxHeight": {
+                    "description": "Specify the maximum window height.",
+                    "type": "number"
+                },
+                "maxWidth": {
+                    "description": "Specify the maximum window width.",
+                    "type": "number"
+                },
+                "minHeight": {
+                    "description": "Specify the minimum window height.",
+                    "type": "number",
+                    "default": 30
+                },
+                "minWidth": {
+                    "description": "Specify the minimum window width.",
+                    "type": "number",
+                    "default": 50
+                },
                 "tabGroupId": {
                     "description": "Specifies the tab group ID. If two or more tab windows are defined with same ID, they will be hosted in the same tab window.",
                     "type": "string"
@@ -948,6 +974,10 @@
                     "type": "string",
                     "default": "flat"
                 },
+                "frameColor": {
+                    "description": "Specifies the Glue42 window frame color. Accepts hex color as a string (e.g., `#666666`) or named HTML colors (e.g., `red`)",
+                    "type": "string"
+                },
                 "tabIndex": {
                     "description": "Specifies the tab position index. Tab windows in the same tab group are ordered by their position index. Use negative index to make the tab active.",
                     "type": "number"
@@ -961,6 +991,36 @@
                     "type": "string",
                     "default": "right"
                 },
+                "allowClose": {
+                    "description": "If `false`, the window will not contain a close button.",
+                    "type": "boolean",
+                    "default": true
+                },
+                "allowTabClose": {
+                    "description": "If `false`, the tab header will not contain a close button.",
+                    "type": "boolean",
+                    "default": true
+                },
+                "allowCollapse": {
+                    "description": "If `false`, the window will not contain a collapse button.",
+                    "type": "boolean",
+                    "default": false
+                },
+                "allowMaximize": {
+                    "description": "If `false`, the window will not contain a maximize button.",
+                    "type": "boolean",
+                    "default": true
+                },
+                "allowMinimize": {
+                    "description": "If `false`,the window will not contain a minimize button.",
+                    "type": "boolean",
+                    "default": true
+                },
+                "allowUnstick": {
+                    "description": "If `false`, the window will remain stuck to other windows.",
+                    "type": "boolean",
+                    "default": true
+                },
                 "allowChannels": {
                     "description": "If `false`, the window will not show the channel selector.",
                     "type": "boolean",
@@ -969,6 +1029,31 @@
                 "channelId": {
                     "description": "ID of the channel.",
                     "type": "string"
+                },
+                "allowLockUnlock": {
+                    "description": "If `false`, the window will not contain a lock/unlock button.",
+                    "type": "boolean",
+                    "default": false
+                },
+                "maximizable": {
+                    "description": "If `false`, the window will not be able to maximize via buttons and/or windows gestures.",
+                    "type": "boolean",
+                    "default": true
+                },
+                "minimizable": {
+                    "description": "If `false`, the window will not be able to minimize via buttons and/or windows gestures.",
+                    "type": "boolean",
+                    "default": true
+                },
+                "showInTaskbar": {
+                    "description": "If `false`, the window will not appear in the taskbar.",
+                    "type": "boolean",
+                    "default": true
+                },
+                "isSticky": {
+                    "description": "If `true`, the newly created window will participate in Glue42 window operations (stick, unstick, etc.).",
+                    "type": "boolean",
+                    "default": true
                 },
                 "canvasPlacement": {
                     "$ref": "#/definitions/canvasPlacement"
@@ -989,6 +1074,10 @@
                         "interop"
                     ],
                     "default": "environment"
+                },
+                "cascade": {
+                    "default": {},
+                    "$ref": "system.json#/definitions/cascadeConfig"
                 }
             }
         },
@@ -1031,6 +1120,28 @@
                     "type": "integer",
                     "default": 400
                 },
+                "maxHeight": {
+                    "description": "Specify the maximum window height.",
+                    "type": "number"
+                },
+                "maxWidth": {
+                    "description": "Specify the maximum window width.",
+                    "type": "number"
+                },
+                "minHeight": {
+                    "description": "Specify the minimum window height.",
+                    "type": "number",
+                    "default": 30
+                },
+                "minWidth": {
+                    "description": "Specify the minimum window width.",
+                    "type": "number",
+                    "default": 50
+                },
+                "tabGroupId": {
+                    "description": "Specifies the tab group ID. If two or more tab windows are defined with same ID, they will be hosted in the same tab window.",
+                    "type": "string"
+                },
                 "mode": {
                     "description": "Glue42 window type. Possible values are `flat`, `html`, `tab`.",
                     "enum": [
@@ -1040,6 +1151,95 @@
                     ],
                     "type": "string",
                     "default": "flat"
+                },
+                "frameColor": {
+                    "description": "Specifies the Glue42 window frame color. Accepts hex color as a string (e.g., `#666666`) or named HTML colors (e.g., `red`)",
+                    "type": "string"
+                },
+                "tabIndex": {
+                    "description": "Specifies the tab position index. Tab windows in the same tab group are ordered by their position index. Use negative index to make the tab active.",
+                    "type": "number"
+                },
+                "relativeTo": {
+                    "description": "The window ID of the window that will be used to relatively position the new window. Can be combined with `relativeDirection`",
+                    "type": "string"
+                },
+                "relativeDirection": {
+                    "description": "Direction (`bottom`, `top`, `left`, `right`) of positioning the window relatively to the `relativeTo` window. Considered only if `relativeTo` is supplied.",
+                    "type": "string",
+                    "default": "right"
+                },
+                "allowClose": {
+                    "description": "If `false`, the window will not contain a close button.",
+                    "type": "boolean",
+                    "default": true
+                },
+                "allowTabClose": {
+                    "description": "If `false`, the tab header will not contain a close button.",
+                    "type": "boolean",
+                    "default": true
+                },
+                "allowCollapse": {
+                    "description": "If `false`, the window will not contain a collapse button.",
+                    "type": "boolean",
+                    "default": false
+                },
+                "allowMaximize": {
+                    "description": "If `false`, the window will not contain a maximize button.",
+                    "type": "boolean",
+                    "default": true
+                },
+                "allowMinimize": {
+                    "description": "If `false`,the window will not contain a minimize button.",
+                    "type": "boolean",
+                    "default": true
+                },
+                "allowUnstick": {
+                    "description": "If `false`, the window will remain stuck to other windows.",
+                    "type": "boolean",
+                    "default": true
+                },
+                "allowChannels": {
+                    "description": "If `false`, the window will not show the channel selector.",
+                    "type": "boolean",
+                    "default": false
+                },
+                "channelId": {
+                    "description": "ID of the channel.",
+                    "type": "string"
+                },
+                "allowLockUnlock": {
+                    "description": "If `false`, the window will not contain a lock/unlock button.",
+                    "type": "boolean",
+                    "default": false
+                },
+                "maximizable": {
+                    "description": "If `false`, the window will not be able to maximize via buttons and/or windows gestures.",
+                    "type": "boolean",
+                    "default": true
+                },
+                "minimizable": {
+                    "description": "If `false`, the window will not be able to minimize via buttons and/or windows gestures.",
+                    "type": "boolean",
+                    "default": true
+                },
+                "showInTaskbar": {
+                    "description": "If `false`, the window will not appear in the taskbar.",
+                    "type": "boolean",
+                    "default": true
+                },
+                "isSticky": {
+                    "description": "If `true`, the newly created window will participate in Glue42 window operations (stick, unstick, etc.).",
+                    "type": "boolean",
+                    "default": true
+                },
+                "canvasPlacement": {
+                    "$ref": "#/definitions/canvasPlacement"
+                },
+                "logging": {
+                    "description": "If `true`, the `stdout` and `stderr` will be saved in the log folder under the `application` folder with the name of the application.",
+                    "type": "boolean",
+                    "default": false
                 },
                 "startFailedMessage": {
                     "description": "Error message that should be displayed to users if the `clickonce` fails to start.",
@@ -1060,6 +1260,10 @@
                         "Window"
                     ],
                     "default": "Window"
+                },
+                "cascade": {
+                    "default": {},
+                    "$ref": "system.json#/definitions/cascadeConfig"
                 }
             }
         },
@@ -1177,6 +1381,24 @@
                     "type": "integer",
                     "default": 400
                 },
+                "maxHeight": {
+                    "description": "Specify the maximum window height.",
+                    "type": "number"
+                },
+                "maxWidth": {
+                    "description": "Specify the maximum window width.",
+                    "type": "number"
+                },
+                "minHeight": {
+                    "description": "Specify the minimum window height.",
+                    "type": "number",
+                    "default": 30
+                },
+                "minWidth": {
+                    "description": "Specify the minimum window width.",
+                    "type": "number",
+                    "default": 50
+                },
                 "tabGroupId": {
                     "description": "Specifies the tab group ID. If two or more tab windows are defined with same ID, they will be hosted in the same tab window.",
                     "type": "string"
@@ -1191,6 +1413,10 @@
                     "type": "string",
                     "default": "flat"
                 },
+                "frameColor": {
+                    "description": "Specifies the Glue42 window frame color. Accepts hex color as a string (e.g., `#666666`) or named HTML colors (e.g., `red`)",
+                    "type": "string"
+                },
                 "tabIndex": {
                     "description": "Specifies the tab position index. Tab windows in the same tab group are ordered by their position index. Use negative index to make the tab active.",
                     "type": "number"
@@ -1204,6 +1430,36 @@
                     "type": "string",
                     "default": "right"
                 },
+                "allowClose": {
+                    "description": "If `false`, the window will not contain a close button.",
+                    "type": "boolean",
+                    "default": true
+                },
+                "allowTabClose": {
+                    "description": "If `false`, the tab header will not contain a close button.",
+                    "type": "boolean",
+                    "default": true
+                },
+                "allowCollapse": {
+                    "description": "If `false`, the window will not contain a collapse button.",
+                    "type": "boolean",
+                    "default": false
+                },
+                "allowMaximize": {
+                    "description": "If `false`, the window will not contain a maximize button.",
+                    "type": "boolean",
+                    "default": true
+                },
+                "allowMinimize": {
+                    "description": "If `false`,the window will not contain a minimize button.",
+                    "type": "boolean",
+                    "default": true
+                },
+                "allowUnstick": {
+                    "description": "If `false`, the window will remain stuck to other windows.",
+                    "type": "boolean",
+                    "default": true
+                },
                 "allowChannels": {
                     "description": "If `false`, the window will not show the channel selector.",
                     "type": "boolean",
@@ -1213,8 +1469,37 @@
                     "description": "ID of the channel.",
                     "type": "string"
                 },
+                "allowLockUnlock": {
+                    "description": "If `false`, the window will not contain a lock/unlock button.",
+                    "type": "boolean",
+                    "default": false
+                },
+                "maximizable": {
+                    "description": "If `false`, the window will not be able to maximize via buttons and/or windows gestures.",
+                    "type": "boolean",
+                    "default": true
+                },
+                "minimizable": {
+                    "description": "If `false`, the window will not be able to minimize via buttons and/or windows gestures.",
+                    "type": "boolean",
+                    "default": true
+                },
+                "showInTaskbar": {
+                    "description": "If `false`, the window will not appear in the taskbar.",
+                    "type": "boolean",
+                    "default": true
+                },
+                "isSticky": {
+                    "description": "If `true`, the newly created window will participate in Glue42 window operations (stick, unstick, etc.).",
+                    "type": "boolean",
+                    "default": true
+                },
                 "canvasPlacement": {
                     "$ref": "#/definitions/canvasPlacement"
+                },
+                "cascade": {
+                    "default": {},
+                    "$ref": "system.json#/definitions/cascadeConfig"
                 }
             },
             "required": [
@@ -1430,6 +1715,10 @@
                 "hidden": {
                     "type": "boolean",
                     "default": false
+                },
+                "cascade": {
+                    "default": {},
+                    "$ref": "system.json#/definitions/cascadeConfig"
                 }
             },
             "required": [

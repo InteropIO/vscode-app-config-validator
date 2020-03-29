@@ -499,8 +499,8 @@
             "defaults": {},
             "$ref": "#/definitions/applicationsConfig"
         },
-        "folders":{
-            "default":{},
+        "folders": {
+            "default": {},
             "$ref": "#/definitions/foldersConfig"
         }
     },
@@ -1393,6 +1393,22 @@
                 "userData": {
                     "descriptions": "Where user data is located. It contains layouts, logs, cache and other system information. Can you env variables to configure the path to it.",
                     "type": "string"
+                }
+            }
+        },
+        "cascadeConfig": {
+            "description": "Whether to open new window instances of the application in a cascade. If set to `true` (default), the default offset value (50 px) will be used. If set to a number, the specified number will be used as an offset for new window instances.",
+            "additionalProperties": false,
+            "properties": {
+                "enabled": {
+                    "description": "Whether to enable or disable window cascading.",
+                    "type": "boolean",
+                    "default": true
+                },
+                "offset": {
+                    "description": "The offset for the new window instance (in pixels). The minimum value is 30.",
+                    "type": "number",
+                    "default": 50
                 }
             }
         }

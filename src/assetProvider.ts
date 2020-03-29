@@ -9,14 +9,16 @@
  */
 import appSchemaJson = require("./assets/applicationSchema.json");
 import systemSchemaJSON = require("./assets/system.json");
-
+import themeSchemaJSON = require("./assets/swTheme.json");
 
 class AssetProvider {
     public readonly systemSchemaLocation = "./assets/system.json";
     public readonly appSchemaLocation = "./assets/applicationSchema.json";
+    public readonly themesSchemaLocation = "./assets/swTheme.json";
 
     private appSchema = appSchemaJson;
     private systemSchema = systemSchemaJSON;
+    private themeSchema = themeSchemaJSON;
 
     public getAppSchema(): string {
         if (!this.appSchema) {
@@ -32,6 +34,35 @@ class AssetProvider {
         }
 
         return JSON.stringify(this.systemSchema);
+    }
+
+    public getThemeSchema(): string {
+        if (!this.themeSchema) {
+            throw new Error("The themes schema was not loaded correctly");
+        }
+
+        return JSON.stringify(this.themeSchema);
+    }
+
+    public getHighLevelThemeSchema(): string {
+        if (!this.themeSchema) {
+            throw new Error("The high level themes schema was not loaded correctly");
+        }
+
+        return JSON.stringify(this.simplifyThemeSchema(this.themeSchema));
+    }
+
+    private simplifyThemeSchema(themeSchema: object) {
+        const schemaCopy = JSON.parse(JSON.stringify(themeSchema));
+
+        schemaCopy.items.properties.properties = {
+            description: "",
+            type: "object",
+            additionalProperties: true,
+            properties: {}
+        }
+
+        return schemaCopy;
     }
 }
 
