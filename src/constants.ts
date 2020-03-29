@@ -24,8 +24,10 @@ export const DEPLOY_COMMAND = "glue42-configuration-validator.deploy";
 export const SHOW_VALID_OPTIONS_COMMAND = "glue42-configuration-validator.ShowValidConfigOptions";
 export const SHOW_ERRORS_COMMAND = "glue42-configuration-validator.ShowErrors";
 export const EXTENSION_NAME = "glue42-configuration-validator";
-export const STATUS_BAR_ITEM_VALID_TEXT = "Valid application configuration";
-export const STATUS_BAR_ITEM_INVALID_TEXT = "Invalid application configuration";
+export const STATUS_BAR_ITEM_VALID_APPLICATION_TEXT = "Valid application configuration";
+export const STATUS_BAR_ITEM_INVALID_APPLICATION_TEXT = "Invalid application configuration";
+export const STATUS_BAR_ITEM_VALID_THEME_TEXT = "Valid theme configuration";
+export const STATUS_BAR_ITEM_INVALID_THEME_TEXT = "Invalid theme configuration";
 
 export const UNDERLINE_ERRORS_OPTION = "underlineErrors";
 export const ENABLE_THEMES_VALIDATION_OPTION = "validateThemes";

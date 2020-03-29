@@ -32,8 +32,10 @@ import {
     SHOW_ERRORS_COMMAND,
     SHOW_VALID_OPTIONS_COMMAND,
     DEPLOY_LABEL,
-    STATUS_BAR_ITEM_INVALID_TEXT,
-    STATUS_BAR_ITEM_VALID_TEXT,
+    STATUS_BAR_ITEM_INVALID_APPLICATION_TEXT,
+    STATUS_BAR_ITEM_INVALID_THEME_TEXT,
+    STATUS_BAR_ITEM_VALID_APPLICATION_TEXT,
+    STATUS_BAR_ITEM_VALID_THEME_TEXT,
     EXTENSION_NAME,
     ENABLE_THEMES_VALIDATION_OPTION,
     UNDERLINE_ERRORS_OPTION
@@ -43,13 +45,13 @@ import commandsManager from './commandsManager';
 import { basename } from 'path';
 import errorPointer from './errorPointer';
 import { CompletionProvider } from './completionProvider';
-import { Validator } from './validator/types';
+import { Validator, ValidationSummary } from './validator/types';
 import { ValidatorComposer } from './validator/validatorComposer';
 import { ApplicationConfigValidator } from './validator/appConfigValidator';
 import { ThemesConfigValidator } from './validator/themesConfigValidator';
 import ajv = require('ajv');
 
-let currentError: { message: string, underLineMessage?: string };
+let currentValidationSummary: ValidationSummary;
 let statusBarItem: vscode.StatusBarItem;
 let extensionSettings: vscode.WorkspaceConfiguration;
 let diagnosticCollection: vscode.DiagnosticCollection;
@@ -82,28 +84,31 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     commandsManager.registerCommand(SHOW_ERRORS_COMMAND, () => {
-        vscode.window.showInformationMessage("You can use one of the following templates: ",
-            WINDOW_LABEL, ACTIVITY_LABEL, EXE_LABEL, SERVICE_WINDOW_LABEL, NODE_LABEL).then((value) => {
-                switch (value) {
-                    case WINDOW_LABEL:
-                        vscode.commands.executeCommand(GENERATE_WINDOW_CONFIGURATION);
-                        break;
-                    case ACTIVITY_LABEL:
-                        vscode.commands.executeCommand(GENERATE_ACTIVITY_CONFIGURATION);
-                        break;
-                    case EXE_LABEL:
-                        vscode.commands.executeCommand(GENERATE_EXE_CONFIGURATION);
-                        break;
-                    case SERVICE_WINDOW_LABEL:
-                        vscode.commands.executeCommand(GENERATE_SERVICE_WINDOW_CONFIGURATION);
-                        break;
-                    case NODE_LABEL:
-                        vscode.commands.executeCommand(GENERATE_NODE_CONFIGURATION);
-                        break;
-                }
-            });
+        if (currentValidationSummary.isApplicationResult) {
 
-        vscode.window.showErrorMessage(currentError.message || "Unable to determine the error");
+            vscode.window.showInformationMessage("You can use one of the following templates: ",
+                WINDOW_LABEL, ACTIVITY_LABEL, EXE_LABEL, SERVICE_WINDOW_LABEL, NODE_LABEL).then((value) => {
+                    switch (value) {
+                        case WINDOW_LABEL:
+                            vscode.commands.executeCommand(GENERATE_WINDOW_CONFIGURATION);
+                            break;
+                        case ACTIVITY_LABEL:
+                            vscode.commands.executeCommand(GENERATE_ACTIVITY_CONFIGURATION);
+                            break;
+                        case EXE_LABEL:
+                            vscode.commands.executeCommand(GENERATE_EXE_CONFIGURATION);
+                            break;
+                        case SERVICE_WINDOW_LABEL:
+                            vscode.commands.executeCommand(GENERATE_SERVICE_WINDOW_CONFIGURATION);
+                            break;
+                        case NODE_LABEL:
+                            vscode.commands.executeCommand(GENERATE_NODE_CONFIGURATION);
+                            break;
+                    }
+                });
+        }
+
+        vscode.window.showErrorMessage(currentValidationSummary.error.message || "Unable to determine the error");
     });
 
     commandsManager.registerTextEditorCommand(GENERATE_WINDOW_CONFIGURATION, (textEditor, edit) => {
@@ -168,16 +173,25 @@ function triggerValidation(document?: vscode.TextDocument) {
         statusBarItem.tooltip = "Click here for available actions";
 
         if (!validationResult.isValid) {
-            currentError = validationResult.error || { message: "Unable to determine the error" };
-            statusBarItem.text = STATUS_BAR_ITEM_INVALID_TEXT;
+            currentValidationSummary = validationResult || { message: "Unable to determine the error", isApplicationResult: true };
+            if (validationResult.isApplicationResult) {
+                statusBarItem.text = STATUS_BAR_ITEM_INVALID_APPLICATION_TEXT;
+            } else if (validationResult.isThemeResult) {
+                statusBarItem.text = STATUS_BAR_ITEM_INVALID_THEME_TEXT;
+            }
             statusBarItem.command = SHOW_ERRORS_COMMAND;
+
             if (validationResult.error.dataPath) {
                 const range = errorPointer.point(validationResult.error.dataPath, documentText);
-                updateDiagnostics(document, range, currentError.underLineMessage || "Unable to determine the error");
+                updateDiagnostics(document, range, currentValidationSummary.error.underLineMessage || "Unable to determine the error");
             }
         } else {
-            statusBarItem.text = STATUS_BAR_ITEM_VALID_TEXT;
-            statusBarItem.command = SHOW_VALID_OPTIONS_COMMAND;
+            if (validationResult.isApplicationResult) {
+                statusBarItem.text = STATUS_BAR_ITEM_VALID_APPLICATION_TEXT;
+                statusBarItem.command = SHOW_VALID_OPTIONS_COMMAND;
+            } else if (validationResult.isThemeResult) {
+                statusBarItem.text = STATUS_BAR_ITEM_VALID_THEME_TEXT;
+            }
 
             updateDiagnostics(document);
         }
