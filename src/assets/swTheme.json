@@ -436,6 +436,11 @@
                                         "type": "string",
                                         "default": "#000000"
                                     },
+                                    "iconSize": {
+                                        "description": "The size of the icon of the buttons",
+                                        "type": "number",
+                                        "default": -1.0
+                                    },
                                     "close": {
                                         "type": "object",
                                         "additionalProperties": false,
@@ -598,6 +603,11 @@
                             "hoverForegroundColor": {
                                 "description": "The foreground color of the window buttons when hovered. Defaults to the base property backgroundColor",
                                 "type": "string"
+                            },
+                            "iconSize": {
+                                "description": "The size of the icon of the button",
+                                "type": "number",
+                                "default": -1.0
                             },
                             "close": {
                                 "type": "object",
@@ -791,6 +801,11 @@
                                         "description": "Changes the right offset of the group buttons",
                                         "type": "integer",
                                         "default": 0
+                                    },
+                                    "iconSize": {
+                                        "description": "The size of the icon of the buttons",
+                                        "type": "number",
+                                        "default": -1.0
                                     },
                                     "close": {
                                         "type": "object",
