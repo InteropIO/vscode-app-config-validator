@@ -99,7 +99,7 @@
         "vscode": "^1.1.25"
     },
     "dependencies": {
-        "ajv": "^6.4.0",
+        "ajv": "^6.12.2",
         "ajv-keywords": "^3.4.1",
         "fs-assistant": "^0.1.2",
         "json-fixer": "^1.4.0",

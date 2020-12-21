@@ -1,5 +1,5 @@
 /**
- * Copyright © 2014-2019 Tick42 OOD
+ * Copyright © 2014-2020 Tick42 OOD
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,7 +17,7 @@ export class ValidatorComposer implements Validator {
     private readonly ajvVal: ajv.Ajv;
 
     constructor(validatorConstructors: Array<(ajvInstance: ajv.Ajv) => Validator>) {
-        this.ajvVal = new ajv({ useDefaults: true, meta: true, jsonPointers: true });
+        this.ajvVal = new ajv({ useDefaults: "empty", meta: true, jsonPointers: true, allErrors: true });
         this.ajvVal.addMetaSchema(require('ajv/lib/refs/json-schema-draft-06.json'));
         require("ajv-keywords")(this.ajvVal, ["transform"]);
         if (validatorConstructors.length === 0) {

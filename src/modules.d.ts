@@ -1,5 +1,5 @@
 /**
- * Copyright © 2014-2019 Tick42 OOD
+ * Copyright © 2014-2020 Tick42 OOD
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,

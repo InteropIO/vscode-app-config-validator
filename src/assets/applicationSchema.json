@@ -27,6 +27,7 @@
                         "exe",
                         "node",
                         "canvas",
+                        "workspaces",
                         "clickonce",
                         "childWindow"
                     ]
@@ -48,6 +49,9 @@
                         },
                         {
                             "$ref": "#/definitions/canvas"
+                        },
+                        {
+                            "$ref": "#/definitions/workspaces"
                         },
                         {
                             "$ref": "#/definitions/clickonce"
@@ -116,6 +120,10 @@
                     "type": "boolean",
                     "default": false
                 },
+                "closeOnHibernate": {
+                    "description": "Whether to close the application when it is part of a hibernating layout.",
+                    "type": "boolean"
+                },
                 "shutdownApplicationName": {
                     "description": "Specify another application to be started in order to shut down the current application instances.",
                     "type": "string"
@@ -152,6 +160,11 @@
                     "type": "boolean",
                     "default": false
                 },
+                "ignoreFromLayouts": {
+                    "description": "If `true`, this app will not be saved when saving a layout, nor closed or restored when restoring a layout.",
+                    "type": "boolean",
+                    "default": false
+                },
                 "sortOrder": {
                     "description": "Defines the (ascending) order used by Glue42 Desktop when sending the user applications list to its clients.",
                     "type": "integer",
@@ -180,6 +193,11 @@
                     "items": {
                         "$ref": "#/definitions/intent"
                     }
+                },
+                "suspendMetrics": {
+                    "description": "If `true`, the application won't publish any metrics.",
+                    "type": "boolean",
+                    "default": false
                 }
             }
         },
@@ -271,6 +289,10 @@
                     "type": "boolean",
                     "default": false
                 },
+                "allowExtract": {
+                    "description": "If `false`, the window will not contain an extract button.",
+                    "type": "boolean"
+                },
                 "maximizable": {
                     "description": "If `false`, the window will not be able to maximize via buttons and/or windows gestures.",
                     "type": "boolean",
@@ -300,7 +322,7 @@
                     "type": "string"
                 },
                 "backgroundColor": {
-                    "description": "Background color of the Electron window. Can be a 6 or a 3 digit hex value (#7FA or #1A2B30).",
+                    "description": "Background color of the Electron window. Can be a 6 or a 3 digit hex value (#7FA or #1e1e1e).",
                     "type": "string",
                     "pattern": "^#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})$"
                 },
@@ -358,7 +380,7 @@
                     "default": true
                 },
                 "injectionIntegration": {
-                    "description": "Whether to allow а web application hosted in Glue42 Desktop to be accessible by external scripts injected in the window.",
+                    "description": "Deprecated - use allowExtensions - Whether to allow а web application hosted in Glue42 Desktop to be accessible by external scripts injected in the window",
                     "type": "boolean",
                     "default": false
                 },
@@ -396,7 +418,10 @@
                     "default": false
                 },
                 "printToPdfSettings": {
-                    "type": "object"
+                    "$ref": "system.json#/definitions/printToPdfConfig"
+                },
+                "print": {
+                    "$ref": "system.json#/definitions/printConfig"
                 },
                 "moveAreaThickness": {
                     "description": "How much of the outer window area is to be considered as a moving area (meaning you can move the window using it). The string value corresponds to the left, top, right and bottom borders.",
@@ -495,6 +520,22 @@
                                     "description": "Identifies whether an application has to be stuck to particular location",
                                     "type": "boolean"
                                 },
+                                "width": {
+                                    "description": "Specifies the window width",
+                                    "type": "number"
+                                },
+                                "height": {
+                                    "description": "Specifies the window height",
+                                    "type": "number"
+                                },
+                                "sizeMode": {
+                                    "type": "string",
+                                    "description": "Defines the window width or height in pixels or percents of the containing monitor",
+                                    "enum": [
+                                        "pixels",
+                                        "percents"
+                                    ]
+                                },
                                 "display": {
                                     "description": "The identifying number of the monitor (e.g., 1, 2, 3 or \"main\")",
                                     "type": "string"
@@ -532,9 +573,8 @@
                     "default": true
                 },
                 "tabTitle": {
-                    "description": "Tab title.",
-                    "type": "string",
-                    "default": ""
+                    "description": "Deprecated. Use 'title' instead.",
+                    "type": "string"
                 },
                 "tabWidth": {
                     "description": "Specifies the tab width.",
@@ -547,6 +587,11 @@
                     "default": false
                 },
                 "tabToolTip": {
+                    "description": "Deprecated. Use 'tabTooltip' instead.",
+                    "type": "string",
+                    "default": ""
+                },
+                "tabTooltip": {
                     "description": "Tab tooltip.",
                     "type": "string",
                     "default": ""
@@ -799,8 +844,138 @@
                     }
                 },
                 "cascade": {
-                    "default": {},
                     "$ref": "system.json#/definitions/cascadeConfig"
+                },
+                "allowExtensions": {
+                    "description": "If `true`, this app can host chrome extensions. Extensions must be enabled in system config.",
+                    "type": "boolean",
+                    "default": false
+                },
+                "consoleLogLevel": {
+                    "type": "string"
+                },
+                "syncTitleWithDocumentTitle": {
+                    "description": "If `true`, window title will change when the document title is updated",
+                    "type": "boolean"
+                },
+                "nativeWindowOpen": {
+                    "description": "If `true`, calling `window.open` from JavaScript code will open the URL in the default browser. The default option is to open in a new container window.",
+                    "type": "string",
+                    "enum": [
+                        "off",
+                        "window",
+                        "browser"
+                    ]
+                },
+                "pagePerformanceMetric": {
+                    "description": "Enabling this will allow this application to publish performance metrics extracted from the underlying Chromium browser.",
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "description": "Enable or disable the Page Performance metric for this application.",
+                            "type": "boolean"
+                        },
+                        "publishInterval": {
+                            "description": "The interval (in ms) in which page performance data will be published",
+                            "type": "number"
+                        },
+                        "initialPublishTimeout": {
+                            "description": "The time (in ms) after which the initial data will be published",
+                            "type": "number"
+                        }
+                    },
+                    "required": [
+                        "enabled"
+                    ],
+                    "additionalProperties": false
+                },
+                "search": {
+                    "$ref": "system.json#/definitions/searchConfig"
+                },
+                "placement": {
+                    "description": "Specifies the window position relative to the screen",
+                    "type": "object",
+                    "properties": {
+                        "snapped": {
+                            "description": "If `true`, the Glue42 Window will remain snapped to the specified screen position even in cases of resolution changes, window visibility changes or when the application virtualization window hosting the Glue42 Window has been resized. However, this doesn't include any API calls or manual user interaction which affect the window placement or bounds. If `false`, the window will be positioned at the specified screen location only once when created",
+                            "type": "boolean"
+                        },
+                        "verticalAlignment": {
+                            "description": "Defines a vertical alignment configuration. If `horizontalAlignment` is set, then `verticalAlignment` will default to \"stretch\"",
+                            "type": "string",
+                            "enum": [
+                                "top",
+                                "bottom",
+                                "center",
+                                "stretch"
+                            ]
+                        },
+                        "horizontalAlignment": {
+                            "description": "Defines a horizontal alignment configuration. If `verticalAlignment` is set, then `horizontalAlignment` will default to \"stretch\"",
+                            "type": "string",
+                            "enum": [
+                                "left",
+                                "right",
+                                "center",
+                                "stretch"
+                            ]
+                        },
+                        "margin": {
+                            "description": "Sets the margin for all four sides of the window",
+                            "type": "string"
+                        },
+                        "width": {
+                            "description": "Defines the window width",
+                            "oneOf": [
+                                {
+                                    "description": "Use a `number` to define the width in pixels",
+                                    "type": "number"
+                                },
+                                {
+                                    "description": "Use a `string` to define the width in pixels or percentage of the screen width - e.g., \"10px\" or \"10%\"",
+                                    "type": "string",
+                                    "additionalProperties": false
+                                }
+                            ]
+                        },
+                        "height": {
+                            "description": "Defines the window height",
+                            "oneOf": [
+                                {
+                                    "description": "Use a `number` to define the height in pixels. ",
+                                    "type": "number"
+                                },
+                                {
+                                    "description": "Use a `string` to define the height in pixels or percentage of the screen height - e.g., \"10px\" or \"10%\"",
+                                    "type": "string",
+                                    "additionalProperties": false
+                                }
+                            ]
+                        },
+                        "display": {
+                            "description": "The identifying number of the monitor (e.g., 1, 2, 3 or \"main\")",
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "snapped"
+                    ],
+                    "additionalProperties": false
+                },
+                "fdc3InitsGlue": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "buttonsVisibility": {
+                    "description": "Determines the conditions under which the window buttons will be visible. Valid only for Glue42 Windows in `html` mode.",
+                    "type": "string",
+                    "enum": [
+                        "off",
+                        "onDemand",
+                        "always",
+                        "onFocus"
+                    ],
+                    "default": "onDemand"
                 }
             },
             "required": [
@@ -907,6 +1082,11 @@
                         "Window"
                     ],
                     "default": "Process"
+                },
+                "agmTrackingLaunchTimeout": {
+                    "description": "Time in seconds to wait for AGM tracked instance to connect. Use 0 to wait indefinitely.",
+                    "type": "number",
+                    "default": 120
                 },
                 "targetProcess": {
                     "description": "Specifies the target process name which should be found and checked for passed special environment values, this way finding the stated process ID. Used when `trackingType=Environment`.",
@@ -1016,6 +1196,10 @@
                     "type": "boolean",
                     "default": true
                 },
+                "allowExtract": {
+                    "description": "If `false`, the window will not contain an extract button.",
+                    "type": "boolean"
+                },
                 "allowUnstick": {
                     "description": "If `false`, the window will remain stuck to other windows.",
                     "type": "boolean",
@@ -1076,8 +1260,12 @@
                     "default": "environment"
                 },
                 "cascade": {
-                    "default": {},
                     "$ref": "system.json#/definitions/cascadeConfig"
+                },
+                "terminateOnShutdown": {
+                    "description": "Whether to terminate the application when Glue42 Enterprise shuts down.",
+                    "type": "boolean",
+                    "default": true
                 }
             }
         },
@@ -1194,6 +1382,10 @@
                     "type": "boolean",
                     "default": true
                 },
+                "allowExtract": {
+                    "description": "If `false`, the window will not contain an extract button.",
+                    "type": "boolean"
+                },
                 "allowUnstick": {
                     "description": "If `false`, the window will remain stuck to other windows.",
                     "type": "boolean",
@@ -1262,8 +1454,12 @@
                     "default": "Window"
                 },
                 "cascade": {
-                    "default": {},
                     "$ref": "system.json#/definitions/cascadeConfig"
+                },
+                "terminateOnShutdown": {
+                    "description": "Whether to terminate the application when Glue42 Enterprise shuts down.",
+                    "type": "boolean",
+                    "default": true
                 }
             }
         },
@@ -1455,6 +1651,10 @@
                     "type": "boolean",
                     "default": true
                 },
+                "allowExtract": {
+                    "description": "If `false`, the window will not contain an extract button.",
+                    "type": "boolean"
+                },
                 "allowUnstick": {
                     "description": "If `false`, the window will remain stuck to other windows.",
                     "type": "boolean",
@@ -1498,8 +1698,12 @@
                     "$ref": "#/definitions/canvasPlacement"
                 },
                 "cascade": {
-                    "default": {},
                     "$ref": "system.json#/definitions/cascadeConfig"
+                },
+                "terminateOnShutdown": {
+                    "description": "Whether to terminate the application when Glue42 Enterprise shuts down.",
+                    "type": "boolean",
+                    "default": true
                 }
             },
             "required": [
@@ -1717,13 +1921,96 @@
                     "default": false
                 },
                 "cascade": {
-                    "default": {},
                     "$ref": "system.json#/definitions/cascadeConfig"
                 }
             },
             "required": [
                 "lanes"
             ]
+        },
+        "workspaces": {
+            "title": "workspacesConfig",
+            "type": "object",
+            "description": "Defines a workspace config.",
+            "additionalProperties": false,
+            "properties": {
+                "saveWorkspaceApp": {
+                    "type": "string"
+                },
+                "restoreWorkspaceApp": {
+                    "type": "string"
+                },
+                "addApplicationApp": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "bounds": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "default": {},
+                    "properties": {
+                        "left": {
+                            "description": "Position (in pixels) of the left window border, relative to the left edge of the display.",
+                            "type": "integer",
+                            "default": 0
+                        },
+                        "top": {
+                            "description": "Position (in pixels) of the top window border, relative to the top edge of the display.",
+                            "type": "integer",
+                            "default": 0
+                        },
+                        "width": {
+                            "description": "Width of the app window.",
+                            "type": "integer",
+                            "default": 600
+                        },
+                        "height": {
+                            "description": "Height of the app window.",
+                            "type": "integer",
+                            "default": 600
+                        }
+                    }
+                },
+                "windowState": {
+                    "description": "If set, the window will start in the specified state (maximized, minimized, normal)",
+                    "enum": [
+                        "maximized",
+                        "minimized",
+                        "normal"
+                    ],
+                    "default": "maximized"
+                },
+                "frameStartLocation": {
+                    "type": "string"
+                },
+                "activateFrame": {
+                    "type": "boolean"
+                },
+                "hidden": {
+                    "type": "boolean",
+                    "default": false
+                },
+                "layout": {
+                    "$ref": "#/definitions/workspaceLayout"
+                },
+                "layouts": {
+                    "description": "Workspaces to be loaded when a new frame is loaded",
+                    "type": "array",
+                    "items": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/definitions/workspaceLayout"
+                            },
+                            {
+                                "$ref": "#/definitions/workspaceRestoreConfig"
+                            }
+                        ]
+                    }
+                }
+            },
+            "required": []
         },
         "canvasApplication": {
             "title": "canvasApplicationConfig",
@@ -1981,6 +2268,153 @@
                     "type": "object"
                 }
             }
+        },
+        "workspaceLayout": {
+            "type": "object",
+            "properties": {
+                "children": {
+                    "type": "array",
+                    "items": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/definitions/rowWorkspaceChild"
+                            },
+                            {
+                                "$ref": "#/definitions/columnWorkspaceChild"
+                            },
+                            {
+                                "$ref": "#/definitions/groupWorkspaceChild"
+                            },
+                            {
+                                "$ref": "#/definitions/windowWorkspaceChild"
+                            }
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "children"
+            ]
+        },
+        "rowWorkspaceChild": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "enum": [
+                        "row"
+                    ]
+                },
+                "children": {
+                    "type": "array",
+                    "items": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/definitions/columnWorkspaceChild"
+                            },
+                            {
+                                "$ref": "#/definitions/windowWorkspaceChild"
+                            },
+                            {
+                                "$ref": "#/definitions/groupWorkspaceChild"
+                            }
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "children",
+                "type"
+            ]
+        },
+        "columnWorkspaceChild": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "enum": [
+                        "column"
+                    ]
+                },
+                "children": {
+                    "type": "array",
+                    "items": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/definitions/rowWorkspaceChild"
+                            },
+                            {
+                                "$ref": "#/definitions/windowWorkspaceChild"
+                            },
+                            {
+                                "$ref": "#/definitions/groupWorkspaceChild"
+                            }
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "children",
+                "type"
+            ]
+        },
+        "groupWorkspaceChild": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "enum": [
+                        "group"
+                    ]
+                },
+                "children": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/windowWorkspaceChild"
+                    }
+                }
+            },
+            "required": [
+                "children",
+                "type"
+            ]
+        },
+        "windowWorkspaceChild": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "enum": [
+                        "window"
+                    ]
+                },
+                "appName": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "appName",
+                "type"
+            ]
+        },
+        "workspaceRestoreConfig": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "layoutName": {
+                    "type": "string"
+                },
+                "restoreConfig": {
+                    "type": "object",
+                    "properties": {
+                        "noTabHeader": {
+                            "type": "boolean"
+                        },
+                        "context": {
+                            "type": "object"
+                        }
+                    }
+                }
+            },
+            "required": [
+                "layoutName"
+            ]
         }
     }
 }
