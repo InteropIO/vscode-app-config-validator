@@ -1,29 +1,74 @@
 {
     "$id": "http://glue42.com/gd/system.json",
     "$schema": "http://json-schema.org/draft-06/schema#",
-    "description": "Schema describing the system configuration in Glue42 Desktop.",
+    "description": "Schema describing the system configuration of Glue42 Desktop.",
     "title": "SystemConfig",
     "type": "object",
     "properties": {
-        "$schema": {
-            "type": "string",
-            "title": "Schema",
-            "description": "Pointer to the schema against which this document should be validated."
-        },
         "region": {
             "type": "string",
-            "description": "Glue42 Desktop region",
+            "description": "Glue42 Desktop region.",
             "default": "DEMO"
         },
         "env": {
             "type": "string",
-            "description": "Glue42 Desktop environment",
+            "description": "Glue42 Desktop environment.",
             "default": "T42"
+        },
+        "systemConfigurations": {
+            "description": "TODO",
+            "default": {
+                "sources": [
+                    {
+                        "type": "path",
+                        "source": "./config",
+                        "configs": "*",
+                        "priority": 1,
+                        "required": true
+                    }
+                ]
+            },
+            "$ref": "#/definitions/config"
         },
         "enableGTF": {
             "type": "boolean",
             "description": "Activates the GTF setup.",
             "default": false
+        },
+        "flash": {
+            "description": "Enable Flash Plugin",
+            "default": false,
+            "oneOf": [
+                {
+                    "description": "If `false`, flash plugin is disabled otherwise use built-in one",
+                    "type": "boolean",
+                    "default": false
+                },
+                {
+                    "description": "Flash plugin is enabled and it will be loaded from the provided path",
+                    "type": "string"
+                }
+            ]
+        },
+        "nameLookupService": {
+            "description": "Configuration for the service which is used to retrieve the name of the logged in user.",
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "description": "Whether to enable or disable the service for retrieving the name of the logged in user.",
+                    "type": "boolean",
+                    "default": false
+                },
+                "url": {
+                    "description": "Endpoint of the service for retrieving the name of the logged in user.",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Path to the name values returned by the service. E.g., `{people[0].nameFirst} {people[0].nameLast}`.",
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
         },
         "auth": {
             "description": "Whether authentication is enabled or not. It can be `true`(will use the machine username with an empty string as a password), a `string` (will use the string as a username and an empty string as a password) or an object defining `authController`.",
@@ -34,7 +79,7 @@
                     "default": false
                 },
                 {
-                    "description": "If `string`, authentication will be skipped and the specified string will be used as username. May not work in all environments.",
+                    "description": "If `string`, authentication will be skipped and the specified string will be used as a username. May not work in all environments.",
                     "type": "string"
                 },
                 {
@@ -57,11 +102,11 @@
             ]
         },
         "gw": {
-            "description": "Gateway configuration.",
+            "description": "Glue42 Gateway configuration.",
             "type": "object",
             "properties": {
                 "embedded": {
-                    "description": "Whether to embed the Gateway in Glue42 Desktop or not.",
+                    "description": "Whether to embed the Glue42 Gateway in Glue42 Desktop or not.",
                     "type": "boolean"
                 },
                 "configuration": {
@@ -80,15 +125,104 @@
             "$ref": "#/definitions/windowsConfig"
         },
         "appStores": {
-            "description": "Defines one or more sources of application configuration.",
+            "description": "Defines one or more sources of application configurations.",
             "type": "array",
             "items": {
                 "$ref": "#/definitions/appStoreConfig"
             },
             "additionalProperties": false
         },
+        "metrics": {
+            "description": "",
+            "type": "object",
+            "default": {
+                "system": "Glue42",
+                "summaryMetric": {
+                    "enabled": true,
+                    "collectInterval": 30,
+                    "minimalFocusInterval": 1000,
+                    "flushOnShutdown": true,
+                    "allowExternalApplications": false,
+                    "debugLoggingEnabled": false
+                },
+                "glueInfoMetric": {
+                    "enabled": true
+                },
+                "perfMetric": {
+                    "enabled": false
+                }
+            },
+            "properties": {
+                "system": {
+                    "description": "Name of the root metric system.",
+                    "type": "string"
+                },
+                "summaryMetric": {
+                    "description": "The Summary metric collects and summarizes focus events per app and is generated at regular intervals.",
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "description": "Enable or disable the Summary metric.",
+                            "type": "boolean",
+                            "default": true
+                        },
+                        "collectInterval": {
+                            "description": "The interval (in minutes) at which information about events is collected. The provided value must be greater than zero and less than or equal to 1440.",
+                            "type": "number",
+                            "default": 30
+                        },
+                        "minimalFocusInterval": {
+                            "description": "The minimum time (in ms) for an app to be considered on focus.",
+                            "type": "number",
+                            "default": 1000
+                        },
+                        "flushOnShutdown": {
+                            "description": "Indicates whether pending metrics must be sent prior to shutdown or discarded.",
+                            "type": "boolean",
+                            "default": true
+                        },
+                        "allowExternalApplications": {
+                            "description": "Allow the collection of focus information from external applications, such as Outlook.",
+                            "type": "boolean",
+                            "default": false
+                        },
+                        "debugLoggingEnabled": {
+                            "description": "Enable or disable debug logging. For testing purposes only.",
+                            "type": "boolean",
+                            "default": false
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "glueInfoMetric": {
+                    "description": "Provides the Glue42 version and the Glue42 initialization configuration of the application.",
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "description": "Indicates whether this metric is enabled or not.",
+                            "type": "boolean",
+                            "default": true
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "perfMetric": {
+                    "description": "Provides performance info about Glue42 and apps",
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "description": "Indicates whether this metric is enabled or not.",
+                            "type": "boolean",
+                            "default": true
+                        }
+                    },
+                    "additionalProperties": false
+                }
+            },
+            "additionalProperties": false
+        },
         "autoStart": {
-            "description": "Defines auto-start batch parameters.",
+            "description": "Defines auto start batch parameters.",
             "type": "object",
             "default": {
                 "priorityEnabled": true,
@@ -111,7 +245,7 @@
                     "type": "number"
                 },
                 "lowPriorityBatchSize": {
-                    "description": "The number of low priority applications that will be started together in regular intervals (specified below).",
+                    "description": "The number of low priority applications that will be started together at regular intervals (specified in `lowPriorityBatchDelay`).",
                     "type": "number"
                 },
                 "lowPriorityBatchDelay": {
@@ -126,23 +260,23 @@
             "$ref": "#/definitions/splashConfig"
         },
         "singleApp": {
-            "description": "Enabling this option will run glue with only one app () and it will look for it at the provided path",
+            "description": "Enabling this option will run Glue42 Desktop with only one app and it will look for it at the provided path.",
             "type": "string"
         },
         "showWindowsInTrayMenu": {
-            "description": "Shows all windows in the system tray menu.",
+            "description": "Deprecated. Shows all windows in the system tray menu.",
             "type": "boolean",
             "default": true,
             "additionalProperties": false
         },
         "showAppsInTrayMenu": {
-            "description": "Shows all applications in the system tray menu.",
+            "description": "Deprecated. Shows all applications in the system tray menu.",
             "type": "boolean",
             "default": true,
             "additionalProperties": false
         },
         "systemAppStores": {
-            "description": "Defines stores that will hold system applications. These will be auto-started initially. Store is not monitored for changes.",
+            "description": "Defines stores that will hold system applications. These will be auto started initially. Store is not monitored for changes.",
             "type": "array",
             "items": {
                 "$ref": "#/definitions/appStoreConfig"
@@ -153,13 +287,14 @@
             "$ref": "#/definitions/processReuseSystemConfig"
         },
         "nodePath": {
-            "description": "The path of the node.",
+            "description": "The path to the Node.js environment that Glue42 Desktop will use to run Node.js applications.",
             "type": "string"
         },
         "issueReporting": {
             "type": "object",
             "description": "The issue reporting configuration in Glue42 Desktop.",
             "default": {
+                "attachmentsViewMode": "file",
                 "mail": {
                     "enabled": false
                 },
@@ -172,6 +307,15 @@
                 "attachScreenshots": {
                     "type": "boolean",
                     "description": "Attaches screenshots of all monitors to the issue report."
+                },
+                "attachmentsViewMode": {
+                    "type": "string",
+                    "description": "Defines how the attachments should be displayed.If file mode is displayed we will display all files as separate item, else we will display three main categories of attachments: screenshots, logs and configs",
+                    "enum": [
+                        "file",
+                        "category"
+                    ],
+                    "default": "file"
                 },
                 "jira": {
                     "description": "Jira configuration.",
@@ -192,7 +336,7 @@
                         },
                         "password": {
                             "type": "string",
-                            "description": "The password of the user which will create the ticket"
+                            "description": "The password of the user which will create the ticket."
                         },
                         "project": {
                             "type": "string",
@@ -206,6 +350,18 @@
                         },
                         "useProjectLeadAsPreferredAssignee": {
                             "type": "boolean"
+                        },
+                        "tlsVersion": {
+                            "type": "string",
+                            "description": "Force TLS protocol version, e.g. Tls12"
+                        },
+                        "noPriority": {
+                            "type": "boolean",
+                            "description": "Don't set ticket priority field."
+                        },
+                        "noEnvironment": {
+                            "type": "boolean",
+                            "description": "Don't set ticket environment field."
                         }
                     },
                     "if": {
@@ -286,17 +442,46 @@
                             "filter": {
                                 "type": "string",
                                 "description": "Filter what will be applied to each file in the folder."
+                            },
+                            "category": {
+                                "type": "string",
+                                "description": "Category which will contain reporting entries.",
+                                "default": "Logs"
+                            },
+                            "selected": {
+                                "type": "boolean",
+                                "description": "Default state of the category in the Feedback form.",
+                                "default": true
                             }
                         },
                         "required": [
                             "name",
                             "folderPath",
                             "zipFolderPath",
-                            "filter"
+                            "filter",
+                            "category"
                         ],
                         "additionalProperties": false
                     },
                     "additionalProperties": false
+                },
+                "appVersion": {
+                    "type": "string",
+                    "description": "Defines the version of application."
+                },
+                "buildVersion": {
+                    "type": "string",
+                    "description": "Defines the build version."
+                },
+                "environment": {
+                    "type": "string",
+                    "description": "Glue42 Desktop environment.",
+                    "default": "T42"
+                },
+                "region": {
+                    "type": "string",
+                    "description": "Glue42 Desktop region.",
+                    "default": "DEMO"
                 }
             },
             "required": [
@@ -308,7 +493,7 @@
         },
         "crashReporter": {
             "type": "object",
-            "description": "The crash reporter configuration in Glue42 Desktop",
+            "description": "The crash reporter configuration in Glue42 Desktop.",
             "default": {
                 "enabled": true,
                 "folderPath": "%LocalAppData%/Tick42/UserData/%GLUE-ENV%-%GLUE-REGION%/crashes",
@@ -321,27 +506,27 @@
             "properties": {
                 "enabled": {
                     "type": "boolean",
-                    "description": "Enables or disables the entire crash reporter"
+                    "description": "Enables or disables the entire crash reporter."
                 },
                 "folderPath": {
                     "type": "string",
-                    "description": "Defines the output location for the crash reporter logging and memory dumps if output local is enabled"
+                    "description": "Defines the output location for the crash reporter logging and memory dumps if output `local` is enabled"
                 },
                 "companyName": {
                     "type": "string",
-                    "description": "The name of the company to be included in the crash report payload"
+                    "description": "The name of the company to be included in the crash report payload."
                 },
                 "productName": {
                     "type": "string",
-                    "description": "The name of the product to be included in the crash report payload"
+                    "description": "The name of the product to be included in the crash report payload."
                 },
                 "output": {
-                    "description": "Defines the type of the output: local or server and the serverUrl to receive the crash report",
+                    "description": "Defines the type of the output: `local` or `server` and the `serverUrl` to receive the crash report.",
                     "type": "object",
                     "properties": {
                         "type": {
                             "type": "string",
-                            "description": "Defines how the crash report output should be handled: saved locally or send over http to a server",
+                            "description": "Defines how the crash report output should be handled: saved locally or send over HTTP to a server.",
                             "enum": [
                                 "local",
                                 "server",
@@ -350,23 +535,23 @@
                         },
                         "serverUrl": {
                             "type": "string",
-                            "description": "Sets the url of the server to receive the crash report of the output type was set to server"
+                            "description": "Sets the URL of the server to receive the crash report if the output type was set to `server`."
                         },
                         "backTraceConfig": {
                             "type": "object",
-                            "description": "Defines the configuration for the BackTrace client",
+                            "description": "Defines the configuration for the BackTrace client.",
                             "properties": {
                                 "token": {
                                     "type": "string",
-                                    "description": "Sets the unique token for sending data to BackTrace"
+                                    "description": "Sets the unique token for sending data to BackTrace."
                                 },
                                 "url": {
                                     "type": "string",
-                                    "description": "Sets the url of the BackTrace server"
+                                    "description": "Sets the URL of the BackTrace server."
                                 },
                                 "handleMainExceptions": {
                                     "type": "string",
-                                    "description": "Enables sending unhandled exceptions in the main process to BackTrace: 'all' will send both uncaught exceptions and unhandled promises, 'only-errors' wil not send unhandled promises ",
+                                    "description": "Enables sending unhandled exceptions in the main process to BackTrace: Passing `all` will send both - uncaught exceptions and unhandled Promises, while `only-errors` wil not send unhandled Promises.",
                                     "enum": [
                                         "all",
                                         "only-errors"
@@ -412,12 +597,22 @@
             "default": true
         },
         "registerHtmlContainer": {
-            "description": "Whether to inject the `htmlContainer` object. It will be used for legacy application.",
+            "description": "Whether to inject the `htmlContainer` object. It will be used for legacy applications.",
+            "type": "boolean",
+            "default": false
+        },
+        "shutdownOnEmptyAppList": {
+            "description": "If enabled, will cause a process-blocking error dialog to display when the user has zero apps. Closing the dialog will shutdown glue-desktop. Note that the embedded shell, if enabled, counts as one app. When 'shutdownOnEmptyAppList' is false, glue-desktop will continue running even if all the appStores get updates that have 0 apps, and the embeddedShell is disabled.",
+            "type": "boolean",
+            "default": true
+        },
+        "closeRunningInstancesOnAppRemoved": {
+            "description": "If `true`, all running application instances will be closed when the application is disabled or removed.",
             "type": "boolean",
             "default": false
         },
         "licREST": {
-            "description": "",
+            "description": "Endpoint for checking the license.",
             "type": "string"
         },
         "activityColors": {
@@ -458,7 +653,7 @@
             }
         },
         "devToolsExtensions": {
-            "description": "Array of extensions to be added to devTools. Each item is a path to a folder that contains the extension.",
+            "description": "Array of extensions to be added to the DevTools. Each item is a path to a folder that contains the extension.",
             "type": "array",
             "items": {
                 "type": "string"
@@ -469,28 +664,28 @@
             "$ref": "#/definitions/layoutsConfig"
         },
         "themes": {
-            "description": "Themes API configuration",
+            "description": "Themes API configuration.",
             "type": "object",
             "default": {
-                "setThemesMethodName": "Connect.ChangeTheme",
-                "getThemesMethodName": "Connect.GetThemes",
-                "sharedContextName": "Connect.Themes"
+                "setThemesMethodName": "T42.Themes.Change",
+                "getThemesMethodName": "T42.Themes.Get",
+                "sharedContextName": "T42.Themes"
             },
             "properties": {
                 "setThemesMethodName": {
                     "type": "string",
-                    "description": "Registered method name into agm for applying of themes",
-                    "default": "Connect.ChangeTheme"
+                    "description": "The name of the registered Interop method for changing the themes.",
+                    "default": "T42.Themes.Change"
                 },
                 "getThemesMethodName": {
                     "type": "string",
-                    "description": "Registered method name into agm for retrieve of themes",
-                    "default": "Connect.GetThemes"
+                    "description": "The name of the registered Interop method for retrieving the themes.",
+                    "default": "T42.Themes.Get"
                 },
                 "sharedContextName": {
                     "type": "string",
-                    "description": "Themes shared context name",
-                    "default": "Connect.Themes"
+                    "description": "Name of the shared context object for the themes.",
+                    "default": "T42.Themes"
                 }
             },
             "additionalProperties": false
@@ -502,10 +697,111 @@
         "folders": {
             "default": {},
             "$ref": "#/definitions/foldersConfig"
+        },
+        "build": {
+            "description": "Allows replacing the default product version with a custom version (e.g., GD 3.4). Visible in different UI components, e.g., splash screen, \"About\" box, etc.",
+            "type": "string"
+        },
+        "legacy": {
+            "default": {},
+            "$ref": "#/definitions/legacyConfig"
+        },
+        "proxy": {
+            "description": "Allows specifying proxy settings for connectivity",
+            "type": "object",
+            "properties": {
+                "useSystemSettings": {
+                    "type": "boolean",
+                    "description": "Use system proxy settings (visible in Internet Explorer's Internet Options -> Connection -> LAN Settings screen"
+                },
+                "pacScript": {
+                    "type": "string",
+                    "description": "URL to proxy auto-configuration script (PAC)."
+                },
+                "url": {
+                    "type": "string",
+                    "description": "Use this proxy URL."
+                },
+                "rules": {
+                    "type": "string",
+                    "description": "Semicolon-delimited list of proxy rules; see https://github.com/electron/electron/blob/master/docs/api/session.md#sessetproxyconfig for syntax"
+                },
+                "bypassRules": {
+                    "type": "string",
+                    "description": "Semicolon-delimited list of host patterns that will always use direct connection; see https://github.com/electron/electron/blob/master/docs/api/session.md#sessetproxyconfig for syntax"
+                },
+                "autodetectTimeoutMs": {
+                    "type": "number",
+                    "description": "How long to wait for response when attempting to detect PAC script"
+                }
+            }
+        },
+        "extends": {
+            "description": "Array of config extensions. The content of the config file is merged over these.",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/extendsConfig"
+            }
+        },
+        "extendedBy": {
+            "description": "Array of config extensions. They are merged over the content of the config file.",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/extendsConfig"
+            }
+        },
+        "tray": {
+            "default": {},
+            "$ref": "#/definitions/trayConfig"
+        },
+        "allowMultipleInstances": {
+            "description": "Defines if multiple instances of Glue42 should be allowed or not. `never` will disable multiple instances completely, `inDifferentEnvRegion` will allow multiple instances only if they are different env/region, `always` will allow multiple instances in all cases.",
+            "default": "inDifferentEnvRegion",
+            "enum": [
+                "never",
+                "inDifferentEnvRegion"
+            ]
+        },
+        "perfCollector": {
+            "description": "Settings around the internal performance data collector",
+            "properties": {
+                "intervalSec": {
+                    "type": "number",
+                    "description": "Interval for publishing performance data"
+                },
+                "eventDelaySec": {
+                    "type": "number",
+                    "description": "In case of specific events (app started, app stopped) perf data will be published outside of the publishing interval. This setting defines a delay for publishing the data after the event occurred. If another event occurs during the delay window, the initial publish is canceled and a new one is scheduled after eventDelaySec (debouncing) "
+                }
+            },
+            "additionalProperties": false
+        },
+        "performanceTracker": {
+            "description": "Settings around the performance tracker",
+            "default": {},
+            "properties": {
+                "enable": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": ""
+                },
+                "trackAutoStarted": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": ""
+                },
+                "isTrackingEnabled": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": ""
+                }
+            },
+            "additionalProperties": false
         }
     },
     "definitions": {
         "appStoreConfig": {
+            "description": "Application stores configuration.",
             "oneOf": [
                 {
                     "$ref": "#/definitions/appStorePathConfig"
@@ -517,11 +813,15 @@
                     "$ref": "#/definitions/appStoreRestConfig"
                 },
                 {
+                    "$ref": "#/definitions/appStorePermissionsFileConfig"
+                },
+                {
                     "$ref": "#/definitions/singleAppStorePathConfig"
                 }
             ]
         },
         "appStorePathConfig": {
+            "description": "Configuration for application stores from a local path.",
             "type": "object",
             "required": [
                 "type",
@@ -534,6 +834,10 @@
                         "path"
                     ]
                 },
+                "isRequired": {
+                    "type": "boolean",
+                    "default": true
+                },
                 "details": {
                     "type": "object",
                     "required": [
@@ -542,6 +846,7 @@
                     "additionalProperties": false,
                     "properties": {
                         "path": {
+                            "description": "Path to the local application store. Can be absolute or relative and you can use defined environment variables.",
                             "type": "string"
                         }
                     }
@@ -549,6 +854,7 @@
             }
         },
         "singleAppStorePathConfig": {
+            "description": "Path to a single app configuration file when Glue42 Desktop is started with a set `singleApp` property.",
             "type": "object",
             "required": [
                 "type",
@@ -561,6 +867,10 @@
                         "singleApp"
                     ]
                 },
+                "isRequired": {
+                    "type": "boolean",
+                    "default": true
+                },
                 "details": {
                     "type": "object",
                     "required": [
@@ -569,6 +879,7 @@
                     "additionalProperties": false,
                     "properties": {
                         "path": {
+                            "description": "Path to an application configuration file. Can be absolute or relative and you can use predefined environment variables.",
                             "type": "string"
                         }
                     }
@@ -576,6 +887,7 @@
             }
         },
         "appStoreGcsConfig": {
+            "description": "Remote app store configuration using the Glue42 Gateway. We recommend using the `appStoreRestConfig` instead, as it provides a direct connection to the REST service.",
             "type": "object",
             "required": [
                 "type"
@@ -587,6 +899,10 @@
                         "cm",
                         "gcs"
                     ]
+                },
+                "isRequired": {
+                    "type": "boolean",
+                    "default": true
                 },
                 "details": {
                     "type": "object",
@@ -601,6 +917,7 @@
             }
         },
         "appStoreRestConfig": {
+            "description": "Configuration for remote app stores from a REST service.",
             "type": "object",
             "required": [
                 "type",
@@ -613,6 +930,10 @@
                         "rest"
                     ]
                 },
+                "isRequired": {
+                    "type": "boolean",
+                    "default": true
+                },
                 "details": {
                     "type": "object",
                     "required": [
@@ -621,12 +942,12 @@
                     "additionalProperties": false,
                     "properties": {
                         "url": {
-                            "description": "The search url of the GCS server providing application configurations.",
+                            "description": "The URL to the GCS server providing application configurations.",
                             "type": "string"
                         },
                         "auth": {
                             "type": "string",
-                            "description": "The way this app-store will connect to a protected server.",
+                            "description": "The way this app store will connect to a protected server.",
                             "enum": [
                                 "no-auth",
                                 "negotiate",
@@ -635,19 +956,56 @@
                             "default": "no-auth"
                         },
                         "pollInterval": {
-                            "description": "How often (milliseconds) should gd make rest calls to the GCS server.",
+                            "description": "How often (milliseconds) should Glue42 Desktop make REST calls to the GCS server.",
                             "type": "number",
                             "default": 60000
                         },
                         "enablePersistentCache": {
-                            "description": "Whether to store the most recent data response on disk. This allows starting glue-desktop later (with cached app configs) even if the GCS rest server is temporarily down.",
+                            "description": "Whether to store the most recent data response on disk. This allows starting Glue42 Desktop later (with cached app configs) even if the GCS REST server is temporarily down.",
                             "type": "boolean",
                             "default": true
                         },
                         "cacheFolder": {
-                            "description": "The location of the cache files.",
+                            "description": "The location of the cached files.",
                             "type": "string",
                             "default": "%LocalAppData%/Tick42/UserData/%GLUE-ENV%-%GLUE-REGION%/gcsCache"
+                        },
+                        "proxy": {
+                            "description": "HTTP proxy to use when fetching data.",
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "appStorePermissionsFileConfig": {
+            "description": "Configuration for a permissions file. If containing valid permissions, will erase all previously applied permissions on read.",
+            "type": "object",
+            "required": [
+                "type",
+                "details"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "type": {
+                    "enum": [
+                        "permissionsFile"
+                    ]
+                },
+                "isRequired": {
+                    "type": "boolean",
+                    "default": true
+                },
+                "details": {
+                    "type": "object",
+                    "required": [
+                        "path"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                        "path": {
+                            "description": "Path to the local permissions file. Can be absolute or relative and you can use defined environment variables.",
+                            "type": "string"
                         }
                     }
                 }
@@ -685,7 +1043,7 @@
                     "description": "Specify default context menu properties.",
                     "properties": {
                         "enabled": {
-                            "description": "If `true`, then the context menu will be enabled, otherwise it will be disabled.",
+                            "description": "If `true`, the context menu will be enabled, otherwise it will be disabled.",
                             "type": "boolean",
                             "default": false
                         }
@@ -693,30 +1051,15 @@
                     "additionalProperties": false
                 },
                 "security": {
-                    "default": {
-                        "webSecurity": true,
-                        "popups": false,
-                        "stopLoadingOnCertificationErrors": true,
-                        "navigateOnDragDrop": false,
-                        "sandbox": true,
-                        "contextIsolation": false,
-                        "nodeIntegration": false
-                    },
+                    "default": {},
                     "$ref": "#/definitions/securityConfig"
                 },
                 "downloadSettings": {
-                    "default": {
-                        "autoSave": true,
-                        "autoOpenPath": false,
-                        "autoOpenDownload": false,
-                        "enable": true,
-                        "enableDownloadBar": true,
-                        "path": "%DownloadsFolder%"
-                    },
+                    "default": {},
                     "$ref": "#/definitions/downloadConfig"
                 },
                 "refreshHandlers": {
-                    "description": "Configuration about refresh handlers",
+                    "description": "Configuration for the refresh handlers.",
                     "default": {
                         "enabled": true,
                         "timeout": 2000
@@ -724,17 +1067,18 @@
                     "type": "object",
                     "properties": {
                         "enabled": {
+                            "description": "If `true`, will enable refresh handlers.",
                             "type": "boolean"
                         },
                         "timeout": {
-                            "description": "The maximum amount of time (ms) that a refresh handler will have to complete its operation",
+                            "description": "The maximum amount of time (ms) that a refresh handler will have to complete its operation.",
                             "type": "number"
                         }
                     },
                     "additionalProperties": false
                 },
                 "closeHandlers": {
-                    "description": "Configuration about close handlers",
+                    "description": "Configuration for close handlers.",
                     "default": {
                         "enabled": true,
                         "timeout": 2000
@@ -742,54 +1086,32 @@
                     "type": "object",
                     "properties": {
                         "enabled": {
+                            "description": "If `true`, will enable close handlers.",
                             "type": "boolean"
                         },
                         "timeout": {
-                            "description": "The maximum amount of time (ms) that a close handler will have to complete its operation",
+                            "description": "The maximum amount of time (ms) that a close handler will have to complete its operation.",
                             "type": "number"
                         }
                     },
                     "additionalProperties": false
                 },
                 "injectSIDtoContext": {
-                    "description": "Whether to inject the SID after successful SSO authentication into window's context",
+                    "description": "Whether to inject the SID in the window context after successful SSO authentication.",
                     "type": "boolean",
                     "default": false
                 },
                 "zoom": {
-                    "default": {
-                        "enabled": true,
-                        "mouseWheelZoom": false,
-                        "factors": [
-                            25,
-                            33,
-                            50,
-                            67,
-                            75,
-                            80,
-                            90,
-                            100,
-                            110,
-                            125,
-                            150,
-                            175,
-                            200,
-                            250,
-                            300,
-                            400,
-                            500
-                        ],
-                        "defaultFactor": 100
-                    },
+                    "default": {},
                     "$ref": "#/definitions/zoomConfig"
                 },
                 "hideGroupHeader": {
-                    "description": "When true all windows are created with their group having a hidden header (Meaning that when a windows sticks to another window there will be no group header)",
+                    "description": "When `true`, the header of a window group will be hidden.",
                     "type": "boolean",
                     "default": false
                 },
                 "autoInjectAPI": {
-                    "description": "Specifies if @glue42/desktop API should be auto-injected into the window context (making Glue factory function available without referencing desktop.js file). The API can also be auto-initialized.",
+                    "description": "Specifies if the Glue42 JavaScript API will be auto injected in the window context. The `Glue()` factory function becomes available without referencing a `desktop.js` file.",
                     "type": "object",
                     "required": [
                         "enabled",
@@ -798,21 +1120,24 @@
                     "additionalProperties": false,
                     "properties": {
                         "enabled": {
+                            "description": "If `true`, will enable auto injection of the Glue42 JavaScript library.",
                             "type": "boolean",
                             "default": false
                         },
                         "version": {
                             "type": "string",
-                            "description": "Version of the API that will be injected. Can be sem version."
+                            "description": "Semantic version of the Glue42 JavaScript API that will be injected."
                         },
                         "autoInit": {
                             "default": false,
-                            "description": "If set will auto initialize glue",
+                            "description": "If set, will auto initialize the injected Glue42 JavaScript library.",
                             "oneOf": [
                                 {
+                                    "description": "Whether to enable auto initialization of the Glue42 JavaScript library.",
                                     "type": "boolean"
                                 },
                                 {
+                                    "description": "Initialization options you can specify if you want to auto initialize the injected Glue42 JavaScript library.",
                                     "type": "object",
                                     "additionalProperties": true
                                 }
@@ -820,7 +1145,67 @@
                         },
                         "rest": {
                             "type": "string",
-                            "description": "URL to a REST service which will be asked for latest glue.js version on startup. The REST should implement"
+                            "description": "URL to a REST service which will be polled for the latest Glue42 JavaScript version on startup."
+                        },
+                        "whitelist": {
+                            "type": "array",
+                            "default": [],
+                            "description": "A list of application names in which the Glue42 JavaScript library will be injected.",
+                            "items": {
+                                "type": "string",
+                                "description": "Application name."
+                            }
+                        },
+                        "blacklist": {
+                            "type": "array",
+                            "default": [],
+                            "description": "A list of application names in which the Glue42 JavaScript library will not be injected.",
+                            "items": {
+                                "type": "string",
+                                "description": "Application name."
+                            }
+                        }
+                    }
+                },
+                "autoInjectFdc3": {
+                    "description": "Specifies if the glue-fdc3 JavaScript API will be auto injected in the window context. The api becomes available without referencing any JS file.",
+                    "type": "object",
+                    "required": [
+                        "enabled",
+                        "version"
+                    ],
+                    "additionalProperties": false,
+                    "properties": {
+                        "enabled": {
+                            "description": "If `true`, will enable auto injection of the glue-fdc3 JavaScript library.",
+                            "type": "boolean",
+                            "default": false
+                        },
+                        "version": {
+                            "type": "string",
+                            "description": "Semantic version of the glue-fdc3 JavaScript API that will be injected."
+                        },
+                        "rest": {
+                            "type": "string",
+                            "description": "URL to a REST service which will be polled for the latest glue-fdc3 JavaScript version on startup."
+                        },
+                        "whitelist": {
+                            "type": "array",
+                            "default": [],
+                            "description": "A list of application names in which the glue-fdc3 JavaScript library will be injected.",
+                            "items": {
+                                "type": "string",
+                                "description": "Application name."
+                            }
+                        },
+                        "blacklist": {
+                            "type": "array",
+                            "default": [],
+                            "description": "A list of application names in which the glue-fdc3 JavaScript library will not be injected.",
+                            "items": {
+                                "type": "string",
+                                "description": "Application name."
+                            }
                         }
                     }
                 },
@@ -828,6 +1213,70 @@
                     "description": "If `true`, will allow users to navigate back (`CTRL+Left`) and forward (`CTRL+Right`) through the web page history.",
                     "type": "boolean",
                     "default": true
+                },
+                "cascade": {
+                    "default": {},
+                    "$ref": "#/definitions/cascadeConfig"
+                },
+                "consoleLogLevel": {
+                    "type": "string"
+                },
+                "syncTitleWithDocumentTitle": {
+                    "description": "If `true`, window title will change when the document title is updated",
+                    "type": "boolean",
+                    "default": true
+                },
+                "nativeWindowOpen": {
+                    "description": "If `true`, calling `window.open` from JavaScript code will open the URL in the default browser. The default option is to open in a new container window.",
+                    "type": "string",
+                    "enum": [
+                        "off",
+                        "window",
+                        "browser"
+                    ],
+                    "default": "window"
+                },
+                "allowExtract": {
+                    "description": "If `true`, the window will contain an extract button.",
+                    "type": "boolean",
+                    "default": false
+                },
+                "pagePerformanceMetric": {
+                    "description": "Enabling this will allow all web based applications to publish performance metrics extracted from the underlying Chromium browser. You can also control this setting on application level.",
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "description": "Enable or disable the Performance metrics for all applications.",
+                            "type": "boolean",
+                            "default": false
+                        },
+                        "publishInterval": {
+                            "description": "The interval (in ms) in which page performance data will be published",
+                            "type": "number",
+                            "default": 30
+                        },
+                        "initialPublishTimeout": {
+                            "description": "The time (in ms) after which the initial data will be published",
+                            "type": "number",
+                            "default": 1000
+                        }
+                    },
+                    "required": [
+                        "enabled"
+                    ],
+                    "additionalProperties": false
+                },
+                "search": {
+                    "default": {},
+                    "$ref": "#/definitions/searchConfig"
+                },
+                "printToPdfSettings": {
+                    "default": {},
+                    "$ref": "#/definitions/printToPdfConfig"
+                },
+                "print": {
+                    "default": {},
+                    "$ref": "#/definitions/printConfig"
                 }
             },
             "additionalProperties": false
@@ -836,7 +1285,7 @@
             "description": "Splash screen configuration.",
             "properties": {
                 "url": {
-                    "description": "The URL, where the splash screen is hosted.",
+                    "description": "The URL where the splash screen is hosted.",
                     "default": "file://%GDDIR%/assets/splash/splash.html",
                     "type": "string"
                 },
@@ -858,12 +1307,12 @@
             "type": "object",
             "properties": {
                 "maxAppsInProcess": {
-                    "description": "Maximum number of application windows in a single process",
+                    "description": "Maximum number of slots for application windows (instances) in a single process.",
                     "type": "number",
                     "default": 9
                 },
                 "appSlotSize": {
-                    "description": "When an app is started in a process a slot is reserved in this process only for instances of the same app - this setting defines the size of this slot. This is helpful for keeping the same applications in the same process.",
+                    "description": "When an app is started in a process, the specified number of slots in this process will be reserved only for instances of the same app. This is helpful for keeping the same applications in the same process. The maximum number of slots in a process is defined by the `maxAppsInProcess` property.",
                     "type": "number",
                     "default": 3
                 }
@@ -871,10 +1320,11 @@
             "additionalProperties": false
         },
         "hotkeys": {
-            "description": "Hotkey settings.",
+            "description": "Hotkeys settings.",
             "type": "object",
             "properties": {
                 "enabled": {
+                    "description": "If `true`, will enable defining custom hotkeys.",
                     "type": "boolean",
                     "default": true
                 },
@@ -883,7 +1333,7 @@
                     "description": "List of applications that cannot register hotkeys. Any app that is not on the list can register hotkeys.",
                     "items": {
                         "type": "string",
-                        "description": "Single email."
+                        "description": "Application name (e.g., appManager)"
                     }
                 },
                 "whitelist": {
@@ -891,7 +1341,7 @@
                     "description": "List of applications that can register hotkeys. Any app that is not on the list cannot register hotkeys.",
                     "items": {
                         "type": "string",
-                        "description": "Single email."
+                        "description": "Application name (e.g., appManager)"
                     }
                 },
                 "reservedHotkeys": {
@@ -899,7 +1349,7 @@
                     "description": "List of reserved hotkeys that apps cannot override.",
                     "items": {
                         "type": "string",
-                        "description": "Single email."
+                        "description": "A hotkey combination (e.g., ctrl+v)."
                     }
                 }
             },
@@ -913,9 +1363,12 @@
                     "type": "boolean"
                 },
                 "port": {
-                    "description": "The Gateway will start on that port.",
+                    "description": "The Glue42 Gateway will start on that port.",
                     "type": "integer",
                     "default": 8080
+                },
+                "route": {
+                    "type": "string"
                 },
                 "logLevel": {
                     "type": "string"
@@ -926,7 +1379,7 @@
                         "appenders": {},
                         "categories": {}
                     },
-                    "additionalProperties": false
+                    "additionalProperties": true
                 },
                 "cluster": {
                     "type": "object",
@@ -934,6 +1387,21 @@
                         "enabled": {
                             "type": "boolean",
                             "default": false
+                        },
+                        "type": {
+                            "type": "string",
+                            "default": "broker"
+                        },
+                        "embedded_broker": {
+                            "type": "object",
+                            "properties": {
+                                "enabled": {
+                                    "type": "boolean"
+                                },
+                                "route": {
+                                    "type": "string"
+                                }
+                            }
                         },
                         "configuration": {
                             "type": "object",
@@ -954,7 +1422,7 @@
                                 },
                                 "node_id": {
                                     "type": "number",
-                                    "description": "specifies the unique node id in the mesh - this is required for static directories. make sure that different gateways in the same mesh have different ids"
+                                    "description": "Specifies the unique node ID in the mesh - this is required for static directories. Make sure that different Glue42 Gateways in the same mesh have different IDs."
                                 },
                                 "directory": {
                                     "type": "object",
@@ -983,54 +1451,65 @@
                                                 "$ref": "#/definitions/meshStaticMember"
                                             }
                                         }
-                                    },
-                                    "additionalProperties": false
+                                    }
                                 }
-                            },
-                            "additionalProperties": false
+                            }
                         }
-                    },
-                    "additionalProperties": false
+                    }
                 }
-            },
-            "additionalProperties": true
+            }
         },
         "securityConfig": {
             "description": "Global security settings.",
             "properties": {
                 "webSecurity": {
                     "description": "When `false`, the same-origin policy will be disabled (usually used when testing web apps) and `allowRunningInsecureContent` will be set to `true`, if not already set to `true` by the user.",
-                    "type": "boolean"
+                    "type": "boolean",
+                    "default": true
                 },
                 "popups": {
-                    "description": "",
-                    "type": "boolean"
+                    "description": "Deprecated. Use nativeWindowOpen setting",
+                    "type": "boolean",
+                    "default": false
                 },
                 "stopLoadingOnCertificationErrors": {
-                    "description": "",
-                    "type": "boolean"
+                    "description": "Whether to load the page if certificates are invalid.",
+                    "type": "boolean",
+                    "default": true
                 },
                 "navigateOnDragDrop": {
                     "description": "Whether dragging and dropping a file or link onto the page triggers navigation.",
-                    "type": "boolean"
+                    "type": "boolean",
+                    "default": false
                 },
                 "sandbox": {
                     "description": "If set, this will sandbox the renderer associated with the window, making it compatible with the Chromium OS-level sandbox and disabling the Node.js engine.",
-                    "type": "boolean"
+                    "type": "boolean",
+                    "default": true
                 },
                 "contextIsolation": {
-                    "description": "",
-                    "type": "boolean"
+                    "description": "If `true`, will allow running code in preload scripts and in Electron APIs in a dedicated JavaScript context. Context isolation allows each script running in the renderer process to make changes to its JavaScript environment without conflicting with scripts in the Electron API or preload script.",
+                    "type": "boolean",
+                    "default": false
                 },
                 "nodeIntegration": {
-                    "description": "Whether node integration is enabled.",
-                    "type": "boolean"
+                    "description": "Whether Node.js integration is enabled.",
+                    "type": "boolean",
+                    "default": false
+                },
+                "allowedExternalURISchemes": {
+                    "type": "array",
+                    "description": "Allowed URI schemes to be opened externally.",
+                    "items": {
+                        "type": "string",
+                        "description": "URI scheme."
+                    }
                 }
             },
             "additionalProperties": false
         },
         "swimlaneConfig": {
-            "description": "Swimlane configurations",
+            "description": "Swimlane configurations.",
             "type": "object",
             "default": {
                 "workspace": {
@@ -1075,7 +1554,7 @@
                     "$ref": "#/definitions/hibernationConfig"
                 },
                 "frame": {
-                    "description": "Frame configurations",
+                    "description": "Frame configurations.",
                     "type": "object",
                     "properties": {
                         "lockdown": {
@@ -1087,7 +1566,7 @@
                     "additionalProperties": false
                 },
                 "workspace": {
-                    "description": "Configuration properties for workspace tab",
+                    "description": "Configuration properties for workspace tab.",
                     "type": "object",
                     "default": {
                         "allowDrop": true,
@@ -1097,22 +1576,22 @@
                     },
                     "properties": {
                         "allowDrop": {
-                            "description": "Indicates whether workspace tab can be 'dropped' inside into other workspaces. ",
+                            "description": "Indicates whether workspace tabs can be dropped inside other workspaces.",
                             "type": "boolean",
                             "default": true
                         },
                         "allowExtract": {
-                            "description": "Indicates whether workspace tab can be 'extracted' from layout. If the property is set to 'true', workspace can be dragout outside of the layout",
+                            "description": "Indicates whether workspace tabs can be extracted from layout. If the property is set to `true`, workspace tabs can be dragged out of the layout.",
                             "type": "boolean",
                             "default": true
                         },
                         "actionButtonTooltip": {
-                            "description": "Tooltip text, which will be showed when mouse hover tooltip button",
+                            "description": "Tooltip text which will be shown on mouse hover over the action button situated on the workspace tab.",
                             "type": "string",
                             "default": "Workspace options"
                         },
                         "addButtonTooltip": {
-                            "description": "Tooltip text, which will be showed when mouse hover add workspace button. Add workspace button is the button, which is placed next to all open workspaces",
+                            "description": "Tooltip text which will be shown on mouse hover over the `Add workspace` button. The `Add workspace` button is the button after the last workspace tab.",
                             "type": "string",
                             "default": "Add workspace"
                         }
@@ -1120,21 +1599,21 @@
                     "additionalProperties": false
                 },
                 "saveApplicationContext": {
-                    "description": "Whatever to save the application context",
+                    "description": "Whether to save the application context.",
                     "type": "boolean"
                 },
                 "saveActivityContext": {
-                    "description": "Whatever to save the activity context",
+                    "description": "Whether to save the activity context.",
                     "type": "boolean"
                 },
                 "detailsApp": {
-                    "description": "Configure the GD to work with canvas details apps with different behaviors",
+                    "description": "Configure the behavior of the Swimlanes details app.",
                     "type": "object",
                     "default": {},
                     "additionalProperties": false,
                     "properties": {
                         "managePopup": {
-                            "description": "Indicates whether GD should manage the visibility of the detailsApp",
+                            "description": "Indicates whether Glue42 Desktop should manage the visibility of the details app.",
                             "type": "boolean",
                             "default": true
                         }
@@ -1144,19 +1623,19 @@
             "additionalProperties": false
         },
         "hibernationConfig": {
-            "description": "",
+            "description": "Configuration for hibernating workspaces.",
             "type": "object",
             "properties": {
                 "enabled": {
-                    "description": "",
+                    "description": "If `true`, will enable workspace hibernation. Workspaces will be hibernated based on the configuration of predefined built-in rules.",
                     "type": "boolean"
                 },
                 "interval": {
-                    "description": "",
+                    "description": "At what interval (in minutes) to check whether workspaces should be hibernated based on the configured rules.",
                     "type": "number"
                 },
                 "workspacesToClose": {
-                    "description": "",
+                    "description": "How many workspaces to hibernate.",
                     "type": "number"
                 },
                 "rules": {
@@ -1174,11 +1653,11 @@
             "properties": {
                 "enabled": {
                     "type": "boolean",
-                    "description": ""
+                    "description": "If `true`, will enable the hibernation rule."
                 },
                 "type": {
                     "type": "string",
-                    "description": "",
+                    "description": "One of the built-in rules: `InsufficientSystemMemory` - under what memory threshold (in KB) to start hibernating workspaces; `MaximumActiveWorkspaces` - if there are more workspaces than the number set for this rule, the additional unused ones will be hibernated; `WorkspaceIdleTime` - set the idle time (in minutes) after which to start hibernating an unused workspace.",
                     "enum": [
                         "InsufficientSystemMemory",
                         "MaximumActiveWorkspaces",
@@ -1187,7 +1666,7 @@
                 },
                 "threshold": {
                     "type": "number",
-                    "description": ""
+                    "description": "Value for the respective rule - KB for `InsufficientSystemMemory`; Number for `MaximumActiveWorkspaces`; Minutes for `WorkspaceIdleTime`"
                 }
             },
             "required": [
@@ -1198,7 +1677,7 @@
             "additionalProperties": false
         },
         "loadControlConfig": {
-            "description": "Configuration for the load order of applications when restoring workspaces in Swimlane.",
+            "description": "Configuration for the load order of applications when restoring Swimlane workspaces.",
             "type": "object",
             "properties": {
                 "restoreStrategy": {
@@ -1212,57 +1691,63 @@
                 },
                 "initialOffsetInterval": {
                     "type": "number",
-                    "description": "Valid only in delayed mode."
+                    "description": "Valid only in `delayed` mode. Initial period after which to start loading applications in batches."
                 },
                 "interval": {
                     "type": "number",
-                    "description": "Valid only in delayed mode."
+                    "description": "Valid only in `delayed` mode. Interval in minutes at which to load the application batches."
                 },
                 "batch": {
                     "type": "number",
-                    "description": "Valid only in delayed mode."
+                    "description": "Valid only in `delayed` mode. Number of applications in a batch to be loaded at each interval."
                 },
                 "showDelayedIndicator": {
                     "type": "boolean",
-                    "description": "",
+                    "description": "Visual indicator `Zzz` on tabs of apps which are not loaded yet. Useful for developing and testing purposes.",
                     "default": false
                 }
             },
             "additionalProperties": false
         },
         "downloadConfig": {
-            "description": "Object that defines file download behavior in the window.",
+            "description": "Object that defines the file download behavior in the window.",
             "type": "object",
             "properties": {
                 "autoSave": {
-                    "description": "If `true`, will auto save the file (without asking the user where to save it). If `false`, a system save dialog will appear.",
-                    "type": "boolean"
+                    "description": "If `true`, will auto save the file (without asking the user where to save it). If `false`, a system dialog for saving the file will appear.",
+                    "type": "boolean",
+                    "default": true
                 },
                 "autoOpenPath": {
                     "description": "If `true`, will open the folder that contains the downloaded file after the download is completed.",
-                    "type": "boolean"
+                    "type": "boolean",
+                    "default": false
                 },
                 "autoOpenDownload": {
                     "description": "If `true`, will open the download file after the download is completed.",
-                    "type": "boolean"
+                    "type": "boolean",
+                    "default": false
                 },
                 "enable": {
                     "description": "If `true`, enables windows to download files.",
-                    "type": "boolean"
+                    "type": "boolean",
+                    "default": true
                 },
                 "enableDownloadBar": {
-                    "description": "If `true`, a download bar tracking the progress will appear at the bottom of the window when downloading. If `false`, the download process will be invisible.",
-                    "type": "boolean"
+                    "description": "If `true`, a download bar tracking the download progress will appear at the bottom of the window when downloading. If `false`, the download process will be invisible.",
+                    "type": "boolean",
+                    "default": true
                 },
                 "path": {
                     "description": "Path where the file will be saved.",
-                    "type": "string"
+                    "type": "string",
+                    "default": "%DownloadsFolder%"
                 }
             },
             "additionalProperties": false
         },
         "layoutsConfig": {
-            "description": "Layouts configuration",
+            "description": "Layouts configuration.",
             "type": "object",
             "additionalProperties": false,
             "default": {},
@@ -1270,7 +1755,7 @@
                 "store": {
                     "properties": {
                         "type": {
-                            "description": "If true will auto save the file (without asking the user where to save it). If false a system save dialog will appear.",
+                            "description": "Defines the type of the layouts store. If set to `file`, the layouts will be stored to and read locally from the default layouts directory of Glue42 Desktop. If set to `rest`, the layouts will be stored to and read from a predefined REST service.",
                             "enum": [
                                 "file",
                                 "rest"
@@ -1278,16 +1763,16 @@
                             "default": "file"
                         },
                         "restURL": {
-                            "description": "If in REST mode the URL of the rest service",
+                            "description": "Valid only in `rest` mode - the URL of the REST service providing the layouts.",
                             "type": "string"
                         },
                         "restFetchInterval": {
-                            "description": "If in REST mode the interval (in seconds) on which a new data will be fetched from the REST service",
+                            "description": "Valid only in `rest` mode - the interval (in seconds) at which the REST service will be polled for new data.",
                             "type": "number",
                             "default": 10
                         },
                         "restClientAuth": {
-                            "description": "If in REST mode the client auth mechanism",
+                            "description": "Valid only in `rest` mode - the client auth mechanism for the REST service.",
                             "default": "negotiate",
                             "enum": [
                                 "no-auth",
@@ -1300,6 +1785,9 @@
                 "swimlaneImportExportV1Layouts": {
                     "type": "boolean",
                     "default": false
+                },
+                "version": {
+                    "type": "number"
                 }
             }
         },
@@ -1308,6 +1796,7 @@
             "type": "object",
             "properties": {
                 "enabled": {
+                    "description": "If `true`, process reuse will be enabled.",
                     "type": "boolean",
                     "default": "true"
                 },
@@ -1318,7 +1807,7 @@
                     "$ref": "#/definitions/processReuseConfig"
                 },
                 "groupAutoStartedByPriorityBatchNumber": {
-                    "description": "If true will group auto started apps by their priority group. Only works if autoStart priority is enabled.",
+                    "description": "If `true`, will group auto started apps by their priority group. Only works if the `autoStart` priority is enabled.",
                     "type": "boolean",
                     "default": true
                 }
@@ -1326,51 +1815,113 @@
             "additionalProperties": false
         },
         "applicationsConfig": {
-            "description": "Application configuration",
+            "description": "Application configuration.",
             "type": "object",
             "additionalProperties": false,
             "default": {},
             "properties": {
                 "icons": {
                     "$ref": "#/definitions/iconsConfig"
+                },
+                "allowLogging": {
+                    "description": "If `true`, app logging will be allowed in a custom file in 'UserData/logs/application' through the 'glue.log' API",
+                    "type": "boolean",
+                    "default": false
+                },
+                "titleFormat": {
+                    "description": "Format of the application title. The supported macros in the title format are `{title}` and `{instanceIndex}`, where `{title}` will be substituted with the value of the `title` property from the application configuration and `{instanceIndex}` - with the number of the started application instance.",
+                    "type": "string"
+                },
+                "closeOnHibernate": {
+                    "description": "If `true`, applications that are part of a hibernating layout will be closed.",
+                    "type": "boolean",
+                    "default": true
+                }
+            }
+        },
+        "legacyConfig": {
+            "description": "Legacy options that should not be used in new Glue42 Desktop deployments.",
+            "type": "object",
+            "properties": {
+                "randomApplicationInInterop": {
+                    "description": "If `true`, will generate random application property in the applications Interop instances (except for single instance apps).",
+                    "type": "boolean",
+                    "default": false
+                },
+                "registerPrintToPDFMethod": {
+                    "description": "If `true`, will register the `T42.Wnd.PrintToPdf` Interop method.",
+                    "type": "boolean",
+                    "default": false
+                },
+                "userApplicationOptions": {
+                    "description": "If `true`, the application starting options specified in the `start()` method of the Application Management API will be retrieved and passed in a way that is compatible with Glue42 Desktop 2.",
+                    "type": "boolean",
+                    "default": false
+                },
+                "tabTitleTakesPrecedenceOverTitle": {
+                    "description": "If `true`, the tab title (if present) will take precedence over the title.",
+                    "type": "boolean",
+                    "default": false
                 }
             }
         },
         "iconsConfig": {
-            "description": "Icons configuration",
+            "description": "Icons configuration.",
             "type": "object",
             "additionalProperties": false,
             "properties": {
                 "rejectUnauthorized": {
-                    "description": "If not false, the server certificate is verified against the list of supplied CAs.",
+                    "description": "If `true`, the server certificate is verified against the list of supplied CA certificates.",
                     "type": "boolean",
                     "default": false
                 }
             }
         },
         "zoomConfig": {
-            "description": "Zoom configuration",
+            "description": "Zoom configuration.",
             "type": "object",
             "additionalProperties": false,
             "properties": {
                 "enabled": {
-                    "description": "Whether to enable or disable the zoom.",
-                    "type": "boolean"
+                    "description": "Whether to enable or disable zooming.",
+                    "type": "boolean",
+                    "default": true
                 },
                 "mouseWheelZoom": {
-                    "description": "Zoom when using the mouse wheel in combination with holding Ctrl.",
-                    "type": "boolean"
+                    "description": "Zoom using the mouse wheel in combination with holding CTRL.",
+                    "type": "boolean",
+                    "default": false
                 },
                 "factors": {
-                    "description": "",
+                    "description": "Factors that define each zoom step (in %). Allowed values are between 25 and 500.",
                     "type": "array",
                     "items": {
                         "type": "number"
-                    }
+                    },
+                    "default": [
+                        25,
+                        33,
+                        50,
+                        67,
+                        75,
+                        80,
+                        90,
+                        100,
+                        110,
+                        125,
+                        150,
+                        175,
+                        200,
+                        250,
+                        300,
+                        400,
+                        500
+                    ]
                 },
                 "defaultFactor": {
-                    "description": "Default zoom level",
-                    "type": "number"
+                    "description": "Default zoom level.",
+                    "type": "number",
+                    "default": 100
                 }
             }
         },
@@ -1386,13 +1937,19 @@
             }
         },
         "foldersConfig": {
-            "description": "Configuration about folders location",
+            "description": "Configuration for folders location.",
             "type": "object",
             "additionalProperties": false,
             "properties": {
                 "userData": {
-                    "descriptions": "Where user data is located. It contains layouts, logs, cache and other system information. Can you env variables to configure the path to it.",
-                    "type": "string"
+                    "descriptions": "Where the user data is located. Contains layouts, logs, cache and other system information. You can use environment variables to configure the path to it.",
+                    "type": "string",
+                    "default": "%LocalAppData%/Tick42/UserData/%GLUE-ENV%-%GLUE-REGION%/"
+                },
+                "cache": {
+                    "descriptions": "Where to store Electron's cache. You can use environment variables to configure the path to it.",
+                    "type": "string",
+                    "default": "%LocalAppData%/Tick42/Cache/%GLUE-ENV%-%GLUE-REGION%/"
                 }
             }
         },
@@ -1409,6 +1966,460 @@
                     "description": "The offset for the new window instance (in pixels). The minimum value is 30.",
                     "type": "number",
                     "default": 50
+                }
+            }
+        },
+        "trayConfig": {
+            "description": "Configuration for the Glue42 Enterprise tray icon menu.",
+            "additionalProperties": false,
+            "properties": {
+                "enabled": {
+                    "description": "Whether to enable or disable tray icon.",
+                    "type": "boolean",
+                    "default": true
+                },
+                "info": {
+                    "description": "Whether to show or hide the information label",
+                    "type": "boolean",
+                    "default": true
+                },
+                "open": {
+                    "description": "Whether to show or hide the 'Open' menu.",
+                    "type": "boolean",
+                    "default": true
+                },
+                "applications": {
+                    "description": "Whether to show or hide the 'Application' menu.",
+                    "type": "boolean",
+                    "default": true
+                },
+                "themes": {
+                    "description": "Whether to show or hide the 'Themes' menu.",
+                    "type": "boolean",
+                    "default": true
+                },
+                "diagnostic": {
+                    "description": "Whether to show or hide the 'Diagnostic' menu.",
+                    "type": "boolean",
+                    "default": true
+                },
+                "hotkeys": {
+                    "description": "Whether to show or hide the 'Hotkeys' menu.",
+                    "type": "boolean",
+                    "default": true
+                },
+                "feedback": {
+                    "description": "Whether to show or hide the 'Feedback' menu.",
+                    "type": "boolean",
+                    "default": true
+                },
+                "about": {
+                    "description": "Whether to show or hide the 'About' menu.",
+                    "type": "boolean",
+                    "default": true
+                },
+                "restart": {
+                    "description": "Whether to show or hide the 'Restart' menu.",
+                    "type": "boolean",
+                    "default": true
+                },
+                "exit": {
+                    "description": "Whether to show or hide the 'Exit' menu.",
+                    "type": "boolean",
+                    "default": true
+                }
+            }
+        },
+        "extendsConfig": {
+            "description": "Configuration for extends.",
+            "additionalProperties": false,
+            "properties": {
+                "type": {
+                    "description": "The type of the extend. Can be on of the following: 'remote', 'file' or 'rest'.",
+                    "type": "string"
+                },
+                "source": {
+                    "description": "The file path or the REST endpoint",
+                    "type": "string"
+                },
+                "timeout": {
+                    "description": "A timeout in milliseconds that the system will use to wait for fetching the extends.",
+                    "type": "number",
+                    "default": 30000
+                },
+                "required": {
+                    "description": "If true failing to get the resource will be treated as system error, otherwise it will be just logged",
+                    "type": "boolean",
+                    "default": false
+                },
+                "auth": {
+                    "type": "string",
+                    "description": "The way this app store will connect to a protected server.",
+                    "enum": [
+                        "no-auth",
+                        "negotiate",
+                        "kerberos"
+                    ],
+                    "default": "no-auth"
+                }
+            }
+        },
+        "searchConfig": {
+            "description": "Configuration for search in page",
+            "additionalProperties": false,
+            "properties": {
+                "enabled": {
+                    "description": "Whether to enable or disable search in page.",
+                    "type": "boolean",
+                    "default": true
+                }
+            }
+        },
+        "printToPdfConfig": {
+            "description": "Configuration for printing the window web page as a PDF file.",
+            "additionalProperties": false,
+            "properties": {
+                "enabled": {
+                    "description": "If `true`, enables printing the window web page as a PDF file.",
+                    "type": "boolean",
+                    "default": true
+                },
+                "autoSave": {
+                    "description": "If `true`, will auto save the file (without asking the user where to save it). If `false`, a system dialog for saving the file will appear.",
+                    "type": "boolean",
+                    "default": false
+                },
+                "autoOpenPath": {
+                    "description": "If `true`, will open the folder that contains the downloaded file after the download is completed.",
+                    "type": "boolean",
+                    "default": false
+                },
+                "autoOpen": {
+                    "description": "If `true`, will open the downloaded file after the download is completed.",
+                    "type": "boolean",
+                    "default": false
+                },
+                "fullPath": {
+                    "description": "Path where the file will be saved.",
+                    "type": "string",
+                    "default": "%DownloadsFolder%"
+                },
+                "usePrintShortcutKey": {
+                    "description": "If `true`, `CTRL+P` will be used to print the window web page as a PDF file.",
+                    "type": "boolean",
+                    "default": false
+                },
+                "headerFooter": {
+                    "description": "Header and footer for the PDF.",
+                    "additionalProperties": false,
+                    "properties": {
+                        "title": {
+                            "type": "string"
+                        },
+                        "url": {
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                },
+                "landscape": {
+                    "description": "Set to `true` for landscape layout, `false` for portrait layout.",
+                    "type": "boolean"
+                },
+                "marginsType": {
+                    "description": "Specifies the type of margins to use. Uses 0 for default margin, 1 for no margin, and 2 for minimum margin.",
+                    "type": "number"
+                },
+                "pageRanges": {
+                    "description": "The page range to print.",
+                    "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                            "from": {
+                                "type": "number",
+                                "description": "Index of the first page to print (0-based)."
+                            },
+                            "to": {
+                                "type": "number",
+                                "description": "Index of the last page to print (inclusive, 0-based)."
+                            }
+                        }
+                    },
+                    "type": "array"
+                },
+                "pageSize": {
+                    "anyOf": [
+                        {
+                            "additionalProperties": false,
+                            "properties": {
+                                "width": {
+                                    "type": "number",
+                                    "description": "Window width."
+                                },
+                                "height": {
+                                    "type": "number",
+                                    "description": "Window height."
+                                }
+                            }
+                        },
+                        {
+                            "enum": [
+                                "A3",
+                                "A4",
+                                "A5",
+                                "Legal",
+                                "Letter",
+                                "Tabloid"
+                            ],
+                            "type": "string"
+                        }
+                    ],
+                    "description": "Specify page size of the generated PDF. Can be `A3`, `A4`, `A5`, `Legal`,`Letter`, `Tabloid` or an `Object` with `height` and `width` properties in microns."
+                },
+                "printBackground": {
+                    "description": "Whether to print CSS backgrounds.",
+                    "type": "boolean"
+                },
+                "printSelectionOnly": {
+                    "description": "Whether to print selection only.",
+                    "type": "boolean"
+                },
+                "scaleFactor": {
+                    "description": "The scale factor of the web page. Can range from 0 to 100.",
+                    "type": "number"
+                }
+            }
+        },
+        "printConfig": {
+            "description": "Configuration for printing the window web page.",
+            "additionalProperties": false,
+            "properties": {
+                "enabled": {
+                    "description": "If `true`, enables printing of window's web page.",
+                    "type": "boolean",
+                    "default": true
+                },
+                "collate": {
+                    "description": "Whether the web page should be collated.",
+                    "type": "boolean"
+                },
+                "color": {
+                    "description": "Whether the printed web page will be in color or grayscale. Default is `true`.",
+                    "type": "boolean",
+                    "default": true
+                },
+                "copies": {
+                    "description": "The number of copies of the web page to print.",
+                    "type": "number"
+                },
+                "deviceName": {
+                    "description": "Set the printer device name to use. Must be the system-defined name and not the user-friendly-name, e.g 'Brother_QL_820NWB' and not 'Brother QL-820NWB'.",
+                    "type": "string"
+                },
+                "dpi": {
+                    "additionalProperties": false,
+                    "properties": {
+                        "horizontal": {
+                            "type": "number"
+                        },
+                        "vertical": {
+                            "type": "number"
+                        }
+                    },
+                    "type": "object"
+                },
+                "duplexMode": {
+                    "description": "Set the duplex mode of the printed web page. Can be `simplex`, `shortEdge`, or `longEdge`.",
+                    "enum": [
+                        "longEdge",
+                        "shortEdge",
+                        "simplex"
+                    ],
+                    "type": "string"
+                },
+                "footer": {
+                    "description": "String to be printed as page footer.",
+                    "type": "string"
+                },
+                "header": {
+                    "description": "String to be printed as page header.",
+                    "type": "string"
+                },
+                "landscape": {
+                    "description": "Whether the web page should be printed in landscape mode. Default is `false`.",
+                    "type": "boolean",
+                    "default": false
+                },
+                "margins": {
+                    "additionalProperties": false,
+                    "properties": {
+                        "bottom": {
+                            "description": "The bottom margin of the printed web page, in pixels.",
+                            "type": "number"
+                        },
+                        "left": {
+                            "description": "The left margin of the printed web page, in pixels.",
+                            "type": "number"
+                        },
+                        "marginType": {
+                            "description": "Can be `default`, `none`, `printableArea`, or `custom`. If `custom` is chosen, you will also need to specify `top`, `bottom`, `left`, and `right`.",
+                            "enum": [
+                                "custom",
+                                "default",
+                                "none",
+                                "printableArea"
+                            ],
+                            "type": "string"
+                        },
+                        "right": {
+                            "description": "The right margin of the printed web page, in pixels.",
+                            "type": "number"
+                        },
+                        "top": {
+                            "description": "The top margin of the printed web page, in pixels.",
+                            "type": "number"
+                        }
+                    },
+                    "type": "object"
+                },
+                "pageRanges": {
+                    "description": "The page range to print.",
+                    "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                            "from": {
+                                "type": "number",
+                                "description": "Index of the first page to print (0-based)."
+                            },
+                            "to": {
+                                "type": "number",
+                                "description": "Index of the last page to print (inclusive, 0-based)."
+                            }
+                        }
+                    },
+                    "type": "array"
+                },
+                "pageSize": {
+                    "anyOf": [
+                        {
+                            "additionalProperties": false,
+                            "properties": {
+                                "width": {
+                                    "type": "number",
+                                    "description": "Window width."
+                                },
+                                "height": {
+                                    "type": "number",
+                                    "description": "Window height."
+                                }
+                            }
+                        },
+                        {
+                            "enum": [
+                                "A3",
+                                "A4",
+                                "A5",
+                                "Legal",
+                                "Letter",
+                                "Tabloid"
+                            ],
+                            "type": "string"
+                        }
+                    ],
+                    "description": "Specify page size of the generated PDF. Can be `A3`, `A4`, `A5`, `Legal`,`Letter`, `Tabloid` or an `Object` with `height` and `width` properties in microns."
+                },
+                "pagesPerSheet": {
+                    "description": "The number of pages to print per sheet.",
+                    "type": "number"
+                },
+                "printBackground": {
+                    "description": "Prints the background color and image of the web page. Default is `false`.",
+                    "type": "boolean",
+                    "default": false
+                },
+                "scaleFactor": {
+                    "description": "The scale factor of the web page.",
+                    "type": "number"
+                },
+                "silent": {
+                    "description": "Whether to ask the user for print settings. Default is `false`.",
+                    "type": "boolean",
+                    "default": false
+                }
+            }
+        },
+        "config": {
+            "description": "TODO",
+            "additionalProperties": false,
+            "properties": {
+                "sources": {
+                    "description": "TODO",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/configSource"
+                    },
+                    "additionalProperties": false
+                }
+            }
+        },
+        "configSource": {
+            "description": "TODO",
+            "additionalProperties": false,
+            "required": [
+                "type",
+                "source",
+                "configs"
+            ],
+            "properties": {
+                "type": {
+                    "description": "",
+                    "enum": [
+                        "path",
+                        "rest",
+                        "default"
+                    ]
+                },
+                "source": {
+                    "description": "",
+                    "type": "string"
+                },
+                "configs": {
+                    "description": "",
+                    "type": "string"
+                },
+                "priority": {
+                    "description": "",
+                    "type": "number",
+                    "default": 1000
+                },
+                "fallback": {
+                    "description": "",
+                    "type": "boolean",
+                    "default": false
+                },
+                "required": {
+                    "description": "If true failing to get the resource will be treated as system error, otherwise it will be just logged",
+                    "type": "boolean",
+                    "default": false
+                },
+                "restAuth": {
+                    "type": "string",
+                    "description": "Auth mechanism when connecting to a rest service.",
+                    "enum": [
+                        "negotiate",
+                        "kerberos"
+                    ],
+                    "default": "negotiate"
+                },
+                "restTimeout": {
+                    "description": "A timeout (in seconds) that the system will use to wait for fetching the rest configs.",
+                    "type": "number",
+                    "default": 30
+                },
+                "restFetchInterval": {
+                    "description": "How often (seconds) should Glue42 Desktop make REST calls to the Config server.",
+                    "type": "number",
+                    "default": 60
                 }
             }
         }
