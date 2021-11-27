@@ -109,8 +109,17 @@ export class ApplicationConfigValidator implements Validator {
             }
 
             const validationSummary: Array<ValidationSummary> = (parsedText as any[]).map((appDef: { type: string }) => {
-
                 const appType = appDef.type;
+
+                // TODO Add workspaces support
+                if (appType === "workspaces") {
+                    return {
+                        isValid: true,
+                        error: { message: "Unknown error" },
+                        isApplicationResult: true,
+                        isThemeResult: false
+                    };
+                }
 
                 const appIsValid = this.ajvVal.validate(`application-${appType}.json`, [appDef]) as boolean;
                 const appErrors = this.ajvVal.errors ? this.ajvVal.errors.map((a) => a) : [];
