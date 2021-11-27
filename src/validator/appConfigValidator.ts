@@ -20,6 +20,7 @@ export class ApplicationConfigValidator implements Validator {
     private readonly AppSchemaEmptyKey = "application-empty.json";
     private readonly AppSchemaKey = "appSchema";
     private readonly SystemSchemaKey = "systemSchema";
+    private readonly AuthControllerSchemaKey = "authControllerSchema";
 
     constructor(ajvVal?: ajv.Ajv) {
         const withOutsideInstance = ajvVal !== undefined && ajvVal !== null;
@@ -38,8 +39,12 @@ export class ApplicationConfigValidator implements Validator {
     public init() {
         const glueAppSchema = assetProvider.getAppSchema();
         const glueSystemSchema = assetProvider.getSystemSchema();
+        const glueAuthControllerSchema = assetProvider.getAuthControllerSchema();
+
         this.ajvVal.addSchema(JSON.parse(glueAppSchema), this.AppSchemaKey);
         this.ajvVal.addSchema(JSON.parse(glueSystemSchema), this.SystemSchemaKey);
+        this.ajvVal.addSchema(JSON.parse(glueAuthControllerSchema), this.AuthControllerSchemaKey);
+
 
         const appSchemaClone: any = JSON.parse(glueAppSchema);
         appSchemaClone.definitions.application.properties.details = { type: "object" };
