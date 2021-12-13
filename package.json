@@ -3,7 +3,7 @@
     "displayName": "Glue42 Configuration Validator",
     "description": "Tool that lints the application configuration files for Glue42 Desktop.",
     "license": "./LICENSE",
-    "version": "0.3.0",
+    "version": "0.3.1",
     "repository": {
         "url": "https://github.com/Tick42/vscode-glue42-app-config-validator"
     },
@@ -99,7 +99,8 @@
         "vscode": "^1.1.25"
     },
     "dependencies": {
-        "ajv": "^6.4.0",
+        "@glue42/schemas": "^3.13.1",
+        "ajv": "^6.12.2",
         "ajv-keywords": "^3.4.1",
         "fs-assistant": "^0.1.2",
         "json-fixer": "^1.4.0",

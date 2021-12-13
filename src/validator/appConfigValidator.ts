@@ -1,5 +1,5 @@
 /**
- * Copyright © 2014-2019 Tick42 OOD
+ * Copyright © 2014-2020 Tick42 OOD
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,6 +20,7 @@ export class ApplicationConfigValidator implements Validator {
     private readonly AppSchemaEmptyKey = "application-empty.json";
     private readonly AppSchemaKey = "appSchema";
     private readonly SystemSchemaKey = "systemSchema";
+    private readonly AuthControllerSchemaKey = "authControllerSchema";
 
     constructor(ajvVal?: ajv.Ajv) {
         const withOutsideInstance = ajvVal !== undefined && ajvVal !== null;
@@ -38,8 +39,12 @@ export class ApplicationConfigValidator implements Validator {
     public init() {
         const glueAppSchema = assetProvider.getAppSchema();
         const glueSystemSchema = assetProvider.getSystemSchema();
+        const glueAuthControllerSchema = assetProvider.getAuthControllerSchema();
+
         this.ajvVal.addSchema(JSON.parse(glueAppSchema), this.AppSchemaKey);
         this.ajvVal.addSchema(JSON.parse(glueSystemSchema), this.SystemSchemaKey);
+        this.ajvVal.addSchema(JSON.parse(glueAuthControllerSchema), this.AuthControllerSchemaKey);
+
 
         const appSchemaClone: any = JSON.parse(glueAppSchema);
         appSchemaClone.definitions.application.properties.details = { type: "object" };
@@ -104,8 +109,17 @@ export class ApplicationConfigValidator implements Validator {
             }
 
             const validationSummary: Array<ValidationSummary> = (parsedText as any[]).map((appDef: { type: string }) => {
-
                 const appType = appDef.type;
+
+                // TODO Add workspaces support
+                if (appType === "workspaces") {
+                    return {
+                        isValid: true,
+                        error: { message: "Unknown error" },
+                        isApplicationResult: true,
+                        isThemeResult: false
+                    };
+                }
 
                 const appIsValid = this.ajvVal.validate(`application-${appType}.json`, [appDef]) as boolean;
                 const appErrors = this.ajvVal.errors ? this.ajvVal.errors.map((a) => a) : [];

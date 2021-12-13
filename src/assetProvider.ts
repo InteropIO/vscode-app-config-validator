@@ -1,5 +1,5 @@
 /**
- * Copyright © 2014-2019 Tick42 OOD
+ * Copyright © 2014-2020 Tick42 OOD
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -7,18 +7,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import appSchemaJson = require("./assets/applicationSchema.json");
-import systemSchemaJSON = require("./assets/system.json");
-import themeSchemaJSON = require("./assets/swTheme.json");
+import appSchemaJson = require("@glue42/schemas/schemas/application.json");
+import systemSchemaJSON = require("@glue42/schemas/schemas/system.json");
+import themeSchemaJSON = require("@glue42/schemas/schemas/swTheme.json");
+import authControllerSchemaJSON = require("@glue42/schemas/schemas/authController.json");
 
 class AssetProvider {
-    public readonly systemSchemaLocation = "./assets/system.json";
-    public readonly appSchemaLocation = "./assets/applicationSchema.json";
-    public readonly themesSchemaLocation = "./assets/swTheme.json";
+    public readonly systemSchemaLocation = "./node_modules/@glue42/schemas/schemas/system.json";
+    public readonly appSchemaLocation = "./node_modules/@glue42/schemas/schemas/application.json";
+    public readonly themesSchemaLocation = "./node_modules/@glue42/schemas/schemas/swTheme.json";
 
     private appSchema = appSchemaJson;
     private systemSchema = systemSchemaJSON;
     private themeSchema = themeSchemaJSON;
+    private authControllerSchema = authControllerSchemaJSON;
 
     public getAppSchema(): string {
         if (!this.appSchema) {
@@ -34,6 +36,14 @@ class AssetProvider {
         }
 
         return JSON.stringify(this.systemSchema);
+    }
+
+    public getAuthControllerSchema(): string {
+        if (!this.authControllerSchema) {
+            throw new Error("The authController schema was not loaded correctly");
+        }
+
+        return JSON.stringify(this.authControllerSchema);
     }
 
     public getThemeSchema(): string {
